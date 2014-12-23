@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="common/template :: head (title='My notes')"></head>
+    <body>
+        <div th:replace="common/template :: header"></div>
+        <div class="container">
+            <h1>Editing</h1>
+            <form method="post" action="/note">
+                <input type="hidden" name="id" th:value="${note.id}" /><br />
+                <p>
+                    <input type="text" name="title" th:value="${note.title}" />
+                </p>
+                <p>
+                    <textarea th:text="${note.content}" name="content" rows="10" cols="50"></textarea>
+                </p>
+                <p>
+                    <input type="submit" value="Enregistrer" class="btn btn-primary"/>
+                </p>
+            </form>
+        </div>
+
+        <div th:replace="common/template :: footer"></div>
+    </body>
+</html>

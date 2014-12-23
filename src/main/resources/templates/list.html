@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="common/template :: head (title='My notes')"></head>
+    <body>
+        <div th:replace="common/template :: header"></div>
+        <div class="container">
+            <h1>Your notes</h1>
+            <ul th:each="note : ${notes}">
+                <li>
+                    <span th:text="${note.title}"></span> - <a th:href="${'/note/' + note.id}">Edit</a> - <a th:href="${'/note/delete/' + note.id}">Delete</a></li>
+            </ul>
+            <hr />
+            <p>
+                <a class="btn btn-primary btn-lg" href="/note/new">New Note</a>
+            </p>
+        </div>
+        <div th:replace="common/template :: footer"></div>
+    </body>
+</html>
