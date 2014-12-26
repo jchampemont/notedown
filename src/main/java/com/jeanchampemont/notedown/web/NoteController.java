@@ -42,7 +42,7 @@ public class NoteController {
     }
 
     @RequestMapping(value = "/note", method = RequestMethod.POST)
-    public String save(@ModelAttribute Note note, ModelMap model) {
+    public String save(Note note, ModelMap model) {
         noteService.save(note);
         return "redirect:/app";
     }
