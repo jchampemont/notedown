@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="/css/custom.css"/>
     </head>
     <body>
-        <nav role="navigation" class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
+        <nav role="navigation" class="navbar navbar-inverse navbar-fixed-top" th:fragment="header (page)">
             <div class="container">
                 <div class="navbar-header">
                     <button data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
@@ -18,17 +18,34 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="/" class="navbar-brand">NoteDown</a>
+                    <a th:href="${sec.isAuthenticated()}? '/app' : '/'" class="navbar-brand">NoteDown</a>
                 </div>
                 <div class="navbar-collapse collapse" id="navbar">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="/">Home</a></li>
+                        <li th:class="${page == 'home'}? active" th:if="${!sec.isAuthenticated()}"><a href="/">Home</a></li>
+                        <li th:class="${page == 'app'}? active" th:if="${!sec.isAuthenticated()}"><a href="/app">Login</a></li>
+                        <li th:class="${page == 'app'}? active" th:if="${sec.isAuthenticated()}"><a href="/app">My notes</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right" th:if="${sec.isAuthenticated()}">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <span th:text="${'Connected as ' + sec.principal.username}"></span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/logout">Logout</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
         <div th:fragment="footer">
+            <hr />
+            <footer>
+                <p>&copy; NoteDown 2014</p>
+            </footer>
             <script src="/js/jquery-2.1.3.min.js"></script>
             <script src="/js/bootstrap.min.js"></script>
         </div>

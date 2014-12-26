@@ -3,6 +3,8 @@ package com.jeanchampemont.notedown.note;
 import com.jeanchampemont.notedown.NoteDownApplication;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
+import com.jeanchampemont.notedown.user.persistence.User;
+import com.jeanchampemont.notedown.user.persistence.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,10 +27,13 @@ public class NoteServiceTest {
 
     private NoteRepository repoMock;
 
+    private UserRepository userRepoMock;
+
     @Before
     public void init() {
         repoMock = mock(NoteRepository.class);
-        sut = new NoteService(repoMock);
+        userRepoMock = mock(UserRepository.class);
+        sut = new NoteService(repoMock, userRepoMock);
     }
 
     @Test
@@ -41,16 +46,19 @@ public class NoteServiceTest {
     @Test
     public void testSave() {
         Note n = new Note("title", "content");
+        User u = new User();
+
         Date someDate = new Date();
         n.setLastModification(someDate);
 
         when(repoMock.save(n)).thenReturn(n);
 
-        n = sut.save(n);
+        n = sut.save(u, n);
 
         verify(repoMock).save(n);
 
         assertTrue(someDate.before(n.getLastModification()));
+        assertTrue(u == n.getUser());
     }
 
     @Test

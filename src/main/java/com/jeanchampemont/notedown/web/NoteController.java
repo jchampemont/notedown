@@ -3,16 +3,17 @@ package com.jeanchampemont.notedown.web;
 import com.jeanchampemont.notedown.note.NoteService;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/app")
 public class NoteController {
 
     private NoteService noteService;
@@ -43,12 +44,12 @@ public class NoteController {
     @RequestMapping(value = "/note", method = RequestMethod.POST)
     public String save(@ModelAttribute Note note, ModelMap model) {
         noteService.save(note);
-        return "redirect:/";
+        return "redirect:/app";
     }
 
     @RequestMapping(value = "/note/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable("id") UUID id, ModelMap model) {
         noteService.delete(id);
-        return "redirect:/";
+        return "redirect:/app";
     }
 }

@@ -1,5 +1,6 @@
 package com.jeanchampemont.notedown.note.persistence;
 
+import com.jeanchampemont.notedown.user.persistence.User;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -10,19 +11,23 @@ import java.util.UUID;
 @Table(name = "note")
 public class Note {
     @Id
-    @Type(type="uuid-char")
+    @Type(type = "uuid-char")
     private UUID id;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 64, nullable = false)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     @Lob
     private String content;
 
-    @Column(name = "last_modification")
+    @Column(name = "last_modification", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModification;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Note() {
         id = UUID.randomUUID();
@@ -64,5 +69,13 @@ public class Note {
 
     public void setLastModification(Date lastModification) {
         this.lastModification = lastModification;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

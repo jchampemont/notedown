@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="common/template :: head (title='Welcome to NoteDown')"></head>
+    <body>
+        <div th:replace="common/template :: header (page='home')"></div>
+        <div class="container">
+            <div class="jumbotron">
+                <h1>NoteDown</h1>
+                <p class="lead">
+                    NoteDown is a markdown-powered simple note taking application.
+                </p>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>Your notes</h2>
+                    <p>
+                        Take some notes
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h2>MarkDown</h2>
+                    <p>
+                        Your notes are displayed in Markdown
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h2>Your cloud</h2>
+                    <p>
+                        Keep your notes really private by hosting your own NoteDown instance, and keep your data safe.
+                    </p>
+                </div>
+            </div>
+            <div th:replace="common/template :: footer"></div>
+        </div>
+    </body>
+</html>

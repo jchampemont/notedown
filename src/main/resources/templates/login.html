@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/template :: head (title='Login')"></head>
+<body>
+    <div th:replace="common/template :: header (page='')"></div>
+    <div class="container">
+        <form class="form-signin" method="post" th:action="@{/login}">
+            <div class="alert alert-danger" th:if="${error}">
+                Username or password is incorrect. Please try again.
+            </div>
+            <div class="alert alert-success" th:if="${logout}">
+                Logout successfully
+            </div>
+            <h2 class="form-signin-heading">Please sign in</h2>
+            <label for="inputEmail" class="sr-only">Email address</label>
+            <input type="text" id="inputEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus" name="email" />
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="required" name="password" />
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="remember-me" /> Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+        <div th:replace="common/template :: footer"></div>
+    </div>
+</body>
+</html>
