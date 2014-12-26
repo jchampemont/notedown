@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/template :: head (title=#{notedown.templates.settings.title})"></head>
+<body>
+<div th:replace="common/template :: header (page='preferences')"></div>
+<div class="container">
+    <h2 th:text="#{notedown.templates.settings.settings}"></h2><br />
+    <div class="alert alert-success" th:if="${success}" th:text="#{notedown.templates.settings.success}"></div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="/app/settings/lang" th:text="#{notedown.templates.settings.lang}"></a></li>
+    </ul><br />
+    <div th:if="${tab == 'lang'}">
+        <form method="post" class="form-horizontal" th:action="@{/app/settings/lang}">
+            <div class="form-group form-group-sm">
+                <label for="locale" class="col-sm-2 control-label" th:text="#{notedown.templates.settings.language-label}"></label>
+                <div class="col-sm-2">
+                    <select name="locale" id="locale" class="form-control">
+                        <option value="" th:attr="selected=${selectedLanguage == ''}? 'selected'" th:text="#{notedown.templates.settings.language-default}"></option>
+                        <option th:each="language : ${availableLanguages}" th:value="${language}" th:text="${language}" th:attr="selected=${selectedLanguage == language}? 'selected'"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="submit" th:value="#{notedown.templates.settings.save-action}" class="btn btn-primary"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div th:replace="common/template :: footer"></div>
+</div>
+</body>
+</html>

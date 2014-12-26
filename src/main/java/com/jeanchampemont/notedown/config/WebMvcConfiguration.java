@@ -1,16 +1,15 @@
 package com.jeanchampemont.notedown.config;
 
 import com.jeanchampemont.notedown.web.SecurityInterceptor;
+import com.jeanchampemont.notedown.user.UserService;
+import com.jeanchampemont.notedown.utils.UserLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-
-import java.util.Locale;
 
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
@@ -32,9 +31,8 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public LocaleResolver localeResolver() {
-        CookieLocaleResolver clr = new CookieLocaleResolver();
-        clr.setDefaultLocale(Locale.ENGLISH);
-        return clr;
+    public LocaleResolver localeResolver(UserService userService) {
+        UserLocaleResolver ulr = new UserLocaleResolver(userService);
+        return ulr;
     }
 }

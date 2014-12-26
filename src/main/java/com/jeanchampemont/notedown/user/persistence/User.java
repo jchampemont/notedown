@@ -21,6 +21,9 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Note> notes;
 
+    @Column(name = "locale", length = 2)
+    private String locale;
+
     public long getId() {
         return id;
     }
@@ -51,5 +54,13 @@ public class User {
 
     public void setNotes(Set<Note> notes) {
         this.notes = notes;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

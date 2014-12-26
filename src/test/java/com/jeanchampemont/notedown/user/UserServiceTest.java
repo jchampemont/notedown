@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,6 +54,33 @@ public class UserServiceTest {
 
         verify(encoderMock).encode(password);
         verify(repoMock).save(argThat(new UserMatcher(email, password)));
+    }
+
+    @Test
+    public void testFindByEmail() {
+        String email = "toto@tata.fr";
+
+        User user = new User();
+
+        when(repoMock.findByEmail(email)).thenReturn(user);
+
+        sut.findByEmail(email);
+
+        verify(repoMock).findByEmail(email);
+    }
+
+    @Test
+    public void testSetLocale() {
+        String locale = "fr";
+
+        User user = new User();
+
+        when(repoMock.save(user)).thenReturn(user);
+
+        User result = sut.setLocale(user, locale);
+
+        verify(repoMock).save(user);
+        assertEquals(locale, user.getLocale());
     }
 
     private class UserMatcher extends ArgumentMatcher<User> {
