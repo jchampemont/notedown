@@ -1,6 +1,6 @@
 package com.jeanchampemont.notedown.config;
 
-import com.jeanchampemont.notedown.web.SecurityInterceptor;
+import com.jeanchampemont.notedown.utils.SecurityInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

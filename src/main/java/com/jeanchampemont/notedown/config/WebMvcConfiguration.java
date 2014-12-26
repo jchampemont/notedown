@@ -1,7 +1,7 @@
 package com.jeanchampemont.notedown.config;
 
-import com.jeanchampemont.notedown.web.SecurityInterceptor;
 import com.jeanchampemont.notedown.user.UserService;
+import com.jeanchampemont.notedown.utils.SecurityInterceptor;
 import com.jeanchampemont.notedown.utils.UserLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

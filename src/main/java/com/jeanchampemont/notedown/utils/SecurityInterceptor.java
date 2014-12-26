@@ -1,4 +1,4 @@
-package com.jeanchampemont.notedown.web;
+package com.jeanchampemont.notedown.utils;
 
 
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
