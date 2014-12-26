@@ -4,6 +4,13 @@ body {
 }
 
 /*
+ * error.html
+ */
+.jumbotron.error {
+    background-color: #f2dede;
+}
+
+/*
  * login.html
  */
 .form-signin {
