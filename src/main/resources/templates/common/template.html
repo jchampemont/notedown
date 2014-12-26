@@ -9,16 +9,15 @@
         <link rel="stylesheet" href="/css/custom.css"/>
     </head>
     <body>
-        <nav role="navigation" class="navbar navbar-fixed-top" th:fragment="header (page)">
+        <div class="navbar navbar-default navbar-fixed-top" th:fragment="header (page)">
             <div class="container">
                 <div class="navbar-header">
+                    <a th:href="${sec.isAuthenticated()}? '/app' : '/'" class="navbar-brand">NoteDown</a>
                     <button data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
-                        <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a th:href="${sec.isAuthenticated()}? '/app' : '/'" class="navbar-brand">NoteDown</a>
                 </div>
                 <div class="navbar-collapse collapse" id="navbar">
                     <ul class="nav navbar-nav">
@@ -39,7 +38,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </div>
 
         <div th:fragment="footer">
             <hr />
