@@ -1,33 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="common/template :: head (title='Welcome to NoteDown')"></head>
+    <head th:replace="common/template :: head (title=#{notedown.templates.home.title})"></head>
     <body>
         <div th:replace="common/template :: header (page='home')"></div>
         <div class="container">
             <div class="jumbotron">
-                <h1>NoteDown</h1>
-                <p class="lead">
-                    NoteDown is a markdown-powered simple note taking application.
-                </p>
+                <h1 th:text="#{notedown.brand}"></h1>
+                <p class="lead" th:text="#{notedown.templates.home.lead}"></p>
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    <h2>Your notes</h2>
-                    <p>
-                        Take some notes
-                    </p>
+                    <h2 th:text="#{notedown.templates.home.heading1.title}"></h2>
+                    <p th:text="#{notedown.templates.home.heading1.desc}"></p>
                 </div>
                 <div class="col-md-4">
-                    <h2>MarkDown</h2>
-                    <p>
-                        Your notes are displayed in Markdown
-                    </p>
+                    <h2 th:text="#{notedown.templates.home.heading2.title}"></h2>
+                    <p th:text="#{notedown.templates.home.heading2.desc}"></p>
                 </div>
                 <div class="col-md-4">
-                    <h2>Your cloud</h2>
-                    <p>
-                        Keep your notes really private by hosting your own NoteDown instance, and keep your data safe.
-                    </p>
+                    <h2 th:text="#{notedown.templates.home.heading3.title}"></h2>
+                    <p th:text="#{notedown.templates.home.heading3.desc}"></p>
                 </div>
             </div>
             <div th:replace="common/template :: footer"></div>

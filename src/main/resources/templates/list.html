@@ -4,14 +4,15 @@
     <body>
         <div th:replace="common/template :: header (page='app')"></div>
         <div class="container">
-            <h1>Your notes</h1>
+            <h1 th:text="#{notedown.templates.list.notes}"></h1>
             <ul th:each="note : ${notes}">
                 <li>
-                    <span th:text="${note.title}"></span> - <a th:href="${'/app/note/' + note.id}">Edit</a> - <a th:href="${'/app/note/delete/' + note.id}">Delete</a></li>
+                    <span th:text="${note.title}"></span> - <a th:href="${'/app/note/' + note.id}" th:text="#{notedown.templates.list.note-edit}"></a> - <a th:href="${'/app/note/delete/' + note.id}" th:text="#{notedown.templates.list.note-delete}"></a>
+                </li>
             </ul>
             <hr />
             <p>
-                <a class="btn btn-primary btn-lg" href="/app/note/new">New Note</a>
+                <a class="btn btn-primary btn-lg" href="/app/note/new" th:text="#{notedown.templates.list.note-new}"></a>
             </p>
             <div th:replace="common/template :: footer"></div>
         </div>

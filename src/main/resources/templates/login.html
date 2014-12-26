@@ -1,27 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/template :: head (title='Login')"></head>
+<head th:replace="common/template :: head (title=#{notedown.templates.login.title})"></head>
 <body>
     <div th:replace="common/template :: header (page='')"></div>
     <div class="container">
         <form class="form-signin" method="post" th:action="@{/login}">
-            <div class="alert alert-danger" th:if="${error}">
-                Username or password is incorrect. Please try again.
-            </div>
-            <div class="alert alert-success" th:if="${logout}">
-                Logout successfully
-            </div>
-            <h2 class="form-signin-heading">Please sign in</h2>
-            <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="text" id="inputEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus" name="email" />
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="required" name="password" />
+            <div class="alert alert-danger" th:if="${error}" th:text="#{notedown.templates.login.login-error}"></div>
+            <div class="alert alert-success" th:if="${logout}" th:text="#{notedown.templates.login.logout-success}"></div>
+            <h2 class="form-signin-heading" th:text="#{notedown.templates.login.login-prompt}"></h2>
+            <input type="text" id="inputEmail" class="form-control" th:placeholder="#{notedown.templates.login.email}" required="required" autofocus="autofocus" name="email" />
+            <input type="password" id="inputPassword" class="form-control" th:placeholder="#{notedown.templates.login.password}" required="required" name="password" />
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" name="remember-me" /> Remember me
+                    <input type="checkbox" name="remember-me" /> <span th:text="#{notedown.templates.login.remember-me}"></span>
                 </label>
             </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{notedown.templates.login.login-action}"></button>
         </form>
         <div th:replace="common/template :: footer"></div>
     </div>
