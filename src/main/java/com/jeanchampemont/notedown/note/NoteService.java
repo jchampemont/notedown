@@ -2,8 +2,8 @@ package com.jeanchampemont.notedown.note;
 
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
+import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
-import com.jeanchampemont.notedown.user.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,12 @@ public class NoteService {
 
     private NoteRepository repo;
 
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    public NoteService(NoteRepository repo, UserRepository userRepository) {
+    public NoteService(NoteRepository repo, UserService userService) {
         this.repo = repo;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +38,7 @@ public class NoteService {
     @Transactional
     public Note save(Note note) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
+        User user = userService.findByEmail(email);
         return save(user, note);
     }
 

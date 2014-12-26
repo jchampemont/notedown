@@ -3,6 +3,7 @@ package com.jeanchampemont.notedown.note;
 import com.jeanchampemont.notedown.NoteDownApplication;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
+import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.user.persistence.repository.UserRepository;
 import org.junit.Before;
@@ -27,13 +28,13 @@ public class NoteServiceTest {
 
     private NoteRepository repoMock;
 
-    private UserRepository userRepoMock;
+    private UserService userServiceMock;
 
     @Before
     public void init() {
         repoMock = mock(NoteRepository.class);
-        userRepoMock = mock(UserRepository.class);
-        sut = new NoteService(repoMock, userRepoMock);
+        userServiceMock = mock(UserService.class);
+        sut = new NoteService(repoMock, userServiceMock);
     }
 
     @Test
