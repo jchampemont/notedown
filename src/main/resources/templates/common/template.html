@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="/css/custom.css"/>
     </head>
     <body>
-        <div class="navbar navbar-default navbar-fixed-top" th:fragment="header (page)">
+        <div class="navbar navbar-inverse navbar-fixed-top" th:fragment="header (page)">
             <div class="container">
                 <div class="navbar-header">
                     <a th:href="${sec.isAuthenticated()}? '/app' : '/'" class="navbar-brand" th:text="#{notedown.brand}"></a>
