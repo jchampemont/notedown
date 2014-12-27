@@ -26,7 +26,7 @@
                 <h1 th:text="#{notedown.templates.error.error}"></h1>
                 <p class="lead" th:text="#{notedown.templates.error.msg}"></p>
             </div>
-            <div th:replace="common/template :: footer"></div>
+            <div th:replace="common/template :: footer(displayText=true)"></div>
         </div>
     </body>
 </html>

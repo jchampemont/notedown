@@ -17,7 +17,7 @@
             </div>
             <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{notedown.templates.login.login-action}"></button>
         </form>
-        <div th:replace="common/template :: footer"></div>
+        <div th:replace="common/template :: footer(displayText=true)"></div>
     </div>
 </body>
 </html>

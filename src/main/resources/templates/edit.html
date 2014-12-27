@@ -3,21 +3,22 @@
     <head th:replace="common/template :: head (title=#{notedown.templates.edit.title(${note.title})})"></head>
     <body>
         <div th:replace="common/template :: header (page='app')"></div>
-        <div class="container">
-            <h1 th:text="${note.title}? #{notedown.templates.edit.edit(${note.title})} : #{notedown.templates.edit.edit-new}"></h1>
-            <form method="post" th:action="@{/app/note}">
-                <input type="hidden" name="id" th:value="${note.id}" /><br />
-                <p>
-                    <input type="text" name="title" th:value="${note.title}" th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
-                </p>
-                <p>
-                    <textarea th:text="${note.content}" name="content" rows="10" cols="50"></textarea>
-                </p>
-                <p>
-                    <input type="submit" th:value="#{notedown.templates.edit.save-action}" class="btn btn-primary"/>
-                </p>
-            </form>
-            <div th:replace="common/template :: footer"></div>
-        </div>
+        <form method="post" th:action="@{/app/note}">
+            <input type="hidden" name="id" th:value="${note.id}" />
+            <div class="editor-container-title col-sm-12">
+                <input type="text" name="title" class="form-control" th:value="${note.title}" th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
+            </div>
+            <div class="editor-container col-sm-6">
+                <textarea class="form-control" id="editor" th:text="${note.content}" name="content" ></textarea>
+            </div>
+            <div class="editor-container col-sm-6">
+                <div class="editor-preview" id="preview"></div>
+            </div>
+            <div class="editor-toolbar col-sm-12">
+                <input type="submit" class="btn btn-primary btn-sm pull-right" th:value="#{notedown.templates.edit.save-action}" />
+            </div>
+        </form>
+        <div th:replace="common/template :: footer"></div>
+        <script src="/js/edit.js"></script>
     </body>
 </html>

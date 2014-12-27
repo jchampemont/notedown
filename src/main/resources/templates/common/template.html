@@ -48,12 +48,14 @@
         </div>
 
         <div th:fragment="footer">
-            <hr />
-            <footer>
+            <hr th:if="${displayText}"/>
+            <footer th:if="${displayText}">
                 <p th:text="${'&copy; '} + #{notedown.footer}"></p>
             </footer>
             <script src="/js/jquery-2.1.3.min.js"></script>
+            <script src="/js/jquery.caret.js"></script>
             <script src="/js/bootstrap.min.js"></script>
+            <script src="/js/marked.min.js"></script>
         </div>
     </body>
 </html>
