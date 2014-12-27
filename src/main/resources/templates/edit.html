@@ -15,6 +15,9 @@
                 <div class="editor-preview" id="preview"></div>
             </div>
             <div class="editor-toolbar col-sm-12">
+                <label>
+                    <input type="checkbox" id="toggle-preview-pane" checked="checked" /> <span th:text="#{notedown.templates.edit.toggle-preview}"></span>
+                </label>
                 <input type="submit" class="btn btn-primary btn-sm pull-right" th:value="#{notedown.templates.edit.save-action}" />
             </div>
         </form>

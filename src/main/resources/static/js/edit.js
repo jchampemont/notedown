@@ -25,18 +25,33 @@ $(function() {
     };
 
     var render = function() {
-        $('#preview').html(marked($('#editor').val()));
+        if($('#toggle-preview-pane').is(":checked")) {
+            $('#preview').html(marked($('#editor').val()));
+        }
     };
 
     var scroll = function() {
-        $("#preview").scrollTop($("#editor").scrollTop());
+        if($('#toggle-preview-pane').is(":checked")) {
+            $("#preview").scrollTop($("#editor").scrollTop());
+        }
     };
 
     var scrollToEndWhenEditAtEnd = function() {
-        var length = $('#editor').val().length;
-        var caret = $('#editor').caret();
-        if(caret == length) {
-            $("#preview").scrollTop($("#editor").prop("scrollHeight"));
+        if($('#toggle-preview-pane').is(":checked")) {
+            var length = $('#editor').val().length;
+            var caret = $('#editor').caret();
+            if (caret == length) {
+                $("#preview").scrollTop($("#editor").prop("scrollHeight"));
+            }
+        }
+    };
+
+    var togglePreviewPane = function() {
+        $('#preview').parent().toggleClass('hide');
+        $('#editor').parent().toggleClass('col-sm-6 col-sm-12');
+        if($('#toggle-preview-pane').is(":checked")) {
+            render();
+            scroll();
         }
     };
 
@@ -48,6 +63,8 @@ $(function() {
     });
 
     $("#editor").scroll(scroll);
+
+    $('#toggle-preview-pane').change(togglePreviewPane);
 
     handleResize();
     render();

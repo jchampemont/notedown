@@ -98,3 +98,6 @@ body {
 .editor-toolbar .btn {
     margin-top: 5px;
 }
+.editor-toolbar label {
+    margin-top: 10px;
+}
