@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="common/template :: head (title=#{notedown.templates.edit.title(${note.title})})"></head>
+    <head th:replace="common/template :: head (title=${note.title}? #{notedown.templates.edit.title(${note.title})} : #{notedown.templates.edit.title-new})"></head>
     <body>
         <div th:replace="common/template :: header (page='app')"></div>
         <form method="post" th:action="@{/app/note}">
