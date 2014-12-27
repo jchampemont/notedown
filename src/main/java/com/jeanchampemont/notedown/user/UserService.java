@@ -56,4 +56,26 @@ public class UserService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return repo.findByEmail(email);
     }
+
+    @Transactional
+    public boolean changeEmail(User user, String email, String password) {
+        if(encoder.matches(password, user.getPassword())) {
+            user.setEmail(email);
+            repo.save(user);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean changePassword(User user, String oldPassword, String newPassword) {
+        if(encoder.matches(oldPassword, user.getPassword())) {
+            user.setPassword(encoder.encode(newPassword));
+            repo.save(user);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -16,7 +16,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,6 +85,95 @@ public class UserServiceTest {
 
         verify(repoMock).save(user);
         assertEquals(locale, user.getLocale());
+    }
+
+    @Test
+    public void testChangeEmailOK() {
+        String email = "toto@tata.fr";
+        String newEmail = "tata@toto.fr";
+        String password = "password";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        User newUser = new User();
+        newUser.setEmail(newEmail);
+        newUser.setPassword(password);
+
+        when(repoMock.save(argThat(new UserMatcher(newEmail, password)))).thenReturn(newUser);
+        when(encoderMock.matches(password, password)).thenReturn(true);
+
+        boolean success = sut.changeEmail(user, newEmail, password);
+
+        verify(repoMock).save(argThat(new UserMatcher(newEmail, password)));
+        verify(encoderMock).matches(password, password);
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testChangeEmailKO() {
+        String email = "toto@tata.fr";
+        String newEmail = "tata@toto.fr";
+        String password = "password";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        when(encoderMock.matches(anyString(), eq(password))).thenReturn(false);
+
+        boolean success = sut.changeEmail(user, newEmail, "wrongPassword");
+
+        verify(encoderMock).matches(anyString(), eq(password));
+
+        assertFalse(success);
+    }
+
+    @Test
+    public void testChangePasswordOK() {
+        String email = "toto@tata.fr";
+        String password = "password";
+        String newPassword = "superSafePassword";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword(newPassword);
+
+        when(repoMock.save(argThat(new UserMatcher(email, newPassword)))).thenReturn(newUser);
+        when(encoderMock.matches(password, password)).thenReturn(true);
+        when(encoderMock.encode(newPassword)).thenReturn(newPassword);
+
+        boolean success = sut.changePassword(user, password, newPassword);
+
+        verify(repoMock).save(argThat(new UserMatcher(email, newPassword)));
+        verify(encoderMock).matches(password, password);
+        verify(encoderMock).encode(newPassword);
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testChangePasswordKO() {
+        String email = "toto@tata.fr";
+        String password = "password";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        when(encoderMock.matches(anyString(), eq(password))).thenReturn(false);
+
+        boolean success = sut.changePassword(user, password, "wrongPassword");
+
+        verify(encoderMock).matches(anyString(), eq(password));
+
+        assertFalse(success);
     }
 
     private class UserMatcher extends ArgumentMatcher<User> {
