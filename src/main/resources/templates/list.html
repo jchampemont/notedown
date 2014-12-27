@@ -29,6 +29,7 @@
                         <tr th:each="note : ${notes}">
                             <td>
                                 <span th:text="${note.title}"></span>
+                                <span class="glyphicon glyphicon-eye-open pull-right invisible preview-icon" th:attr="data-id=${note.id}"></span>
                             </td>
                             <td th:text="${prettyTime.format(note.lastModification)}"></td>
                             <td>
@@ -64,6 +65,7 @@
                 <a class="btn btn-primary btn-lg" href="/app/note/new" th:text="#{notedown.templates.list.note-new}"></a>
             </p>
             <div th:replace="common/template :: footer"></div>
+            <script src="/js/list.js"></script>
         </div>
     </body>
 </html>
