@@ -3,6 +3,7 @@ package com.jeanchampemont.notedown.config;
 import com.jeanchampemont.notedown.utils.SecurityInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -30,6 +31,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource dataSource;
 
+    @Value("${notedown.remember-me.session.duration-seconds}")
+    int tokenValiditySeconds;
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -46,7 +50,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")).logoutSuccessUrl("/login?logout")
             .and()
-                .rememberMe().tokenRepository(persistentTokenRepository()).tokenValiditySeconds(3600)
+                .rememberMe().tokenRepository(persistentTokenRepository()).tokenValiditySeconds(tokenValiditySeconds)
             .and()
                 .csrf();
     }
