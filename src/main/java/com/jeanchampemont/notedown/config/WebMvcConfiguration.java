@@ -18,6 +18,7 @@
 package com.jeanchampemont.notedown.config;
 
 import com.jeanchampemont.notedown.user.UserService;
+import com.jeanchampemont.notedown.utils.PrettyTimeInterceptor;
 import com.jeanchampemont.notedown.utils.SecurityInterceptor;
 import com.jeanchampemont.notedown.utils.UserLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,13 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     @Autowired
     SecurityInterceptor securityInterceptor;
 
+    @Autowired
+    PrettyTimeInterceptor prettyTimeInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(securityInterceptor);
+        registry.addInterceptor(prettyTimeInterceptor);
         registry.addInterceptor(localeChangeInterceptor());
     }
 
