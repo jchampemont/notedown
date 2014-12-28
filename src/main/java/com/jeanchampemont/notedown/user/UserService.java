@@ -87,7 +87,7 @@ public class UserService {
     public User update(User user) {
         User originalUser = repo.findByEmail(user.getEmail());
         User currentUser = authenticationService.getCurrentUser();
-        if(hasWriteAccess(currentUser, originalUser)) {
+        if (hasWriteAccess(currentUser, originalUser)) {
             originalUser.setLocale(user.getLocale());
             return repo.save(originalUser);
         }

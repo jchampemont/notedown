@@ -57,25 +57,25 @@ public class SettingsController {
         return "redirect:/app/settings/user";
     }
 
-    @RequestMapping(value="/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
     public String user(ModelMap model) {
         model.put("tab", "user");
         model.put("user", authenticationService.getCurrentUser());
         return "settings";
     }
 
-    @RequestMapping(value="/user", method = RequestMethod.POST)
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
     public String updateUser(SettingsUserForm form, ModelMap model) {
         User user = authenticationService.getCurrentUser();
 
         boolean success = true;
         boolean hasChanged = false;
-        if(!user.getEmail().equals(form.getEmail())) {
+        if (!user.getEmail().equals(form.getEmail())) {
             hasChanged = true;
             Optional<User> existingUser = userService.getUserByEmail(form.getEmail());
-            if(! existingUser.isPresent()) {
+            if (!existingUser.isPresent()) {
                 success = userService.changeEmail(user, form.getEmail(), form.getOldPassword());
-                if(!success) {
+                if (!success) {
                     model.put("wrongPassword", true);
                 } else {
                     //Changing email need new authentication
@@ -86,10 +86,10 @@ public class SettingsController {
                 model.put("emailExists", true);
             }
         }
-        if(success && !StringUtils.isEmpty(form.getNewPassword())) {
+        if (success && !StringUtils.isEmpty(form.getNewPassword())) {
             hasChanged = true;
             success = userService.changePassword(user, form.getOldPassword(), form.getNewPassword());
-            if(!success) {
+            if (!success) {
                 model.put("wrongPassword", true);
             }
         }
@@ -98,7 +98,7 @@ public class SettingsController {
         return user(model);
     }
 
-    @RequestMapping(value="/lang", method = RequestMethod.GET)
+    @RequestMapping(value = "/lang", method = RequestMethod.GET)
     public String lang(ModelMap model) {
         model.put("tab", "lang");
         model.put("availableLanguages", availableLanguages());
@@ -106,10 +106,10 @@ public class SettingsController {
         return "settings";
     }
 
-    @RequestMapping(value="/lang", method = RequestMethod.POST)
+    @RequestMapping(value = "/lang", method = RequestMethod.POST)
     public String updateLang(SettingsLanguageForm form, ModelMap model) {
         User user = authenticationService.getCurrentUser();
-        if(! user.getLocale().equals(form.getLocale())) {
+        if (!user.getLocale().equals(form.getLocale())) {
             user.setLocale(form.getLocale());
             userService.update(user);
         }

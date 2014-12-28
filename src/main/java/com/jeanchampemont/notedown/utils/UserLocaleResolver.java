@@ -50,12 +50,12 @@ public class UserLocaleResolver implements LocaleResolver {
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        if(SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             return acceptHeaderLocaleResolver.resolveLocale(request);
         }
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> user = userService.getUserByEmail(email);
-        if( ! user.isPresent() || StringUtils.isEmpty(user.get().getLocale())) {
+        if (!user.isPresent() || StringUtils.isEmpty(user.get().getLocale())) {
             return acceptHeaderLocaleResolver.resolveLocale(request);
         }
         return user.map(u -> Locale.forLanguageTag(u.getLocale())).get();

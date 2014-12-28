@@ -43,7 +43,7 @@ public class NoteRestController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public NoteDto getById(@PathVariable("id") UUID id) {
         Note note = noteService.get(id);
-        if(note == null) {
+        if (note == null) {
             throw new ResourceNotFoundException();
         }
         NoteDto result = new NoteDto();

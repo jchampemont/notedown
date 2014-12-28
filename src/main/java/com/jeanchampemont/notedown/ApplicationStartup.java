@@ -17,7 +17,6 @@
  */
 package com.jeanchampemont.notedown;
 
-import com.jeanchampemont.notedown.note.NoteService;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.user.UserService;

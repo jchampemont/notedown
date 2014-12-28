@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class PrettyTimeInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        if(modelAndView != null) {
+        if (modelAndView != null) {
             PrettyTime prettyTime = new PrettyTime();
             prettyTime.setLocale(RequestContextUtils.getLocale(request));
             modelAndView.getModel().put("prettyTime", prettyTime);

@@ -46,6 +46,6 @@ public class NoteDownUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("not found");
         }
         return new org.springframework.security.core.userdetails.User
-                        (user.getEmail(), user.getPassword(), true, true, true, true, Collections.emptyList());
+                (user.getEmail(), user.getPassword(), true, true, true, true, Collections.emptyList());
     }
 }

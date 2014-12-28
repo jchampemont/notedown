@@ -26,8 +26,6 @@ import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,10 +67,10 @@ public class NoteService {
     public Note get(UUID id) {
         User user = authenticationService.getCurrentUser();
         Note note = repo.findOne(id);
-        if(note == null) {
+        if (note == null) {
             return null;
         }
-        if(hasReadAccess(user, note)) {
+        if (hasReadAccess(user, note)) {
             return note;
         } else {
             throw new OperationNotAllowedException();
@@ -89,10 +87,10 @@ public class NoteService {
     public Note createUpdate(Note note) {
         User user = authenticationService.getCurrentUser();
         Note originalNote = repo.findOne(note.getId());
-        if(originalNote == null) {
+        if (originalNote == null) {
             originalNote = note;
         }
-        if(hasWriteAccess(user, originalNote)) {
+        if (hasWriteAccess(user, originalNote)) {
             originalNote = updateLastModification(originalNote);
             originalNote.setTitle(note.getTitle());
             originalNote.setContent(note.getContent());
@@ -112,7 +110,7 @@ public class NoteService {
     public void delete(UUID id) {
         User user = authenticationService.getCurrentUser();
         Note originalNote = repo.findOne(id);
-        if(originalNote != null) {
+        if (originalNote != null) {
             if (hasWriteAccess(user, originalNote)) {
                 repo.delete(id);
             } else {
