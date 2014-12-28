@@ -24,10 +24,6 @@ import com.jeanchampemont.notedown.web.form.SettingsLanguageForm;
 import com.jeanchampemont.notedown.web.form.SettingsUserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -115,7 +111,7 @@ public class SettingsController {
         User user = authenticationService.getCurrentUser();
         if(! user.getLocale().equals(form.getLocale())) {
             user.setLocale(form.getLocale());
-            userService.updateUser(user);
+            userService.update(user);
         }
         model.put("success", true);
         return lang(model);

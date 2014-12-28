@@ -84,7 +84,7 @@ public class UserService {
      */
     @Transactional
     @CacheEvict(value = "user", key = "#user.email")
-    public User updateUser(User user) {
+    public User update(User user) {
         User originalUser = repo.findByEmail(user.getEmail());
         User currentUser = authenticationService.getCurrentUser();
         if(hasWriteAccess(currentUser, originalUser)) {
@@ -120,7 +120,7 @@ public class UserService {
      * @param user
      * @param oldPassword
      * @param newPassword
-     * @return whether or not the change wass sucessfull
+     * @return whether or not the change was sucessfull
      */
     @Transactional
     @CacheEvict(value = "user", key = "#user.email")

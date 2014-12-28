@@ -50,10 +50,11 @@ public class Note {
         id = UUID.randomUUID();
     }
 
-    public Note(String title, String content) {
+    public Note(String title, String content, User user) {
         id = UUID.randomUUID();
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
     public UUID getId() {

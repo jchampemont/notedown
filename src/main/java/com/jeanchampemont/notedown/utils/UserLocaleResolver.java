@@ -65,6 +65,6 @@ public class UserLocaleResolver implements LocaleResolver {
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
         User user = authenticationService.getCurrentUser();
         user.setLocale(locale.getLanguage());
-        userService.updateUser(user);
+        userService.update(user);
     }
 }

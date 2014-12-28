@@ -23,6 +23,7 @@ import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
+import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +32,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -55,43 +59,148 @@ public class NoteServiceTest {
     }
 
     @Test
-    public void testGetAll() {
+    public void testGetNotes() {
         User user = new User();
 
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findByUserOrderByLastModificationDesc(user)).thenReturn(Collections.emptyList());
 
-        sut.getAll();
+        Iterable<Note> result = sut.getNotes();
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findByUserOrderByLastModificationDesc(user);
+
+        assertFalse(result.iterator().hasNext());
     }
 
     @Test
-    public void testSave() {
-        Note n = new Note("title", "content");
-        User u = new User();
+    public void testGet() {
+        UUID id = UUID.randomUUID();
 
-        Date someDate = new Date();
-        n.setLastModification(someDate);
+        User user = new User();
+        user.setId(12);
 
-        when(repoMock.save(n)).thenReturn(n);
+        Note note = new Note();
+        note.setUser(user);
 
-        n = sut.save(u, n);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.findOne(id)).thenReturn(note);
 
-        verify(repoMock).save(n);
+        Note result = sut.get(id);
 
-        assertTrue(someDate.before(n.getLastModification()));
-        assertTrue(u == n.getUser());
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findOne(id);
+
+        assertEquals(note, result);
+    }
+
+    @Test(expected = OperationNotAllowedException.class)
+    public void testGetNotAllowed() {
+        UUID id = UUID.randomUUID();
+
+        User user = new User();
+        user.setId(12);
+
+        Note note = new Note();
+        note.setUser(user);
+
+        User unauthorizedUser = new User();
+        unauthorizedUser.setId(23);
+
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(unauthorizedUser);
+        when(repoMock.findOne(id)).thenReturn(note);
+
+        sut.get(id);
+
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findOne(id);
+    }
+
+    @Test
+    public void testCreateUpdateNew() {
+        User user = new User();
+        user.setId(12);
+
+        Note note = new Note();
+
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.findOne(note.getId())).thenReturn(null);
+        when(repoMock.save(note)).thenReturn(note);
+
+        Note result = sut.createUpdate(note);
+
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findOne(note.getId());
+        verify(repoMock).save(note);
+
+        assertEquals(result, note);
+    }
+
+    @Test
+    public void testCreateUpdateExisting() {
+        User user = new User();
+        user.setId(12);
+
+        Note existingNote = new Note();
+
+        Note note = new Note();
+        note.setId(existingNote.getId());
+        note.setTitle("title");
+        note.setContent("content");
+
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.findOne(note.getId())).thenReturn(existingNote);
+        when(repoMock.save(existingNote)).thenReturn(existingNote);
+
+        Note result = sut.createUpdate(note);
+
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findOne(note.getId());
+        verify(repoMock).save(existingNote);
+
+        assertEquals(result, existingNote);
+    }
+
+    @Test(expected = OperationNotAllowedException.class)
+    public void testCreateUpdateNotAllowed() {
+        User user = new User();
+        user.setId(12);
+
+        User notAllowedUser = new User();
+        notAllowedUser.setId(122);
+
+        Note existingNote = new Note();
+        existingNote.setUser(user);
+
+        Note note = new Note();
+        note.setId(existingNote.getId());
+        note.setTitle("title");
+        note.setContent("content");
+
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(notAllowedUser);
+        when(repoMock.findOne(note.getId())).thenReturn(existingNote);
+
+        sut.createUpdate(note);
+
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findOne(note.getId());
     }
 
     @Test
     public void testDelete() {
-        Note n = new Note("title", "content");
+        User user = new User();
+        user.setId(12);
 
-        sut.delete(n.getId());
+        Note note = new Note();
 
-        verify(repoMock).delete(n.getId());
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.findOne(note.getId())).thenReturn(note);
+
+        sut.delete(note.getId());
+
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findOne(note.getId());
+        verify(repoMock).delete(note.getId());
     }
 
 }

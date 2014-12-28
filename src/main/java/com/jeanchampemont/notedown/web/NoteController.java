@@ -19,10 +19,10 @@ package com.jeanchampemont.notedown.web;
 
 import com.jeanchampemont.notedown.note.NoteService;
 import com.jeanchampemont.notedown.note.persistence.Note;
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,14 +35,17 @@ public class NoteController {
 
     private NoteService noteService;
 
+    private AuthenticationService authenticationService;
+
     @Autowired
-    public NoteController(NoteService noteService) {
+    public NoteController(NoteService noteService, AuthenticationService authenticationService) {
         this.noteService = noteService;
+        this.authenticationService = authenticationService;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public String index(ModelMap model) {
-        model.put("notes", noteService.getAll());
+        model.put("notes", noteService.getNotes());
         return "list";
     }
 
@@ -60,7 +63,7 @@ public class NoteController {
 
     @RequestMapping(value = "/note", method = RequestMethod.POST)
     public String save(Note note, ModelMap model) {
-        noteService.save(note);
+        noteService.createUpdate(note);
         return "redirect:/app";
     }
 

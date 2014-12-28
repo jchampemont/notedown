@@ -26,17 +26,14 @@ import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -119,7 +116,7 @@ public class UserServiceTest {
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.save(user)).thenReturn(user);
 
-        User result = sut.updateUser(user);
+        User result = sut.update(user);
 
         verify(repoMock).findByEmail(email);
         verify(repoMock).save(user);
@@ -143,7 +140,7 @@ public class UserServiceTest {
         when(repoMock.findByEmail(email)).thenReturn(user);
         when(authenticationServiceMock.getCurrentUser()).thenReturn(notAuthorizedUser);
 
-        User result = sut.updateUser(user);
+        User result = sut.update(user);
 
         verify(repoMock).findByEmail(email);
         verify(authenticationServiceMock).getCurrentUser();
