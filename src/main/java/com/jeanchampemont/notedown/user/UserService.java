@@ -17,82 +17,131 @@
  */
 package com.jeanchampemont.notedown.user;
 
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.user.persistence.repository.UserRepository;
+import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.Optional;
 
+/**
+ * This service manages users of the application.
+ *
+ * @author Jean Champémont
+ */
 @Service
 public class UserService {
+
+    private AuthenticationService authenticationService;
 
     private UserRepository repo;
 
     private PasswordEncoder encoder;
 
     @Autowired
-    public UserService(UserRepository repo, PasswordEncoder encoder) {
+    public UserService(AuthenticationService authenticationService, UserRepository repo, PasswordEncoder encoder) {
+        this.authenticationService = authenticationService;
         this.repo = repo;
         this.encoder = encoder;
     }
 
+    /**
+     * Create the user.
+     * The password is encoded.
+     * @param user
+     * @return persisted user with encoded password
+     */
     @Transactional
-    public User create(String email, String password) {
-        User result = new User();
-        result.setEmail(email);
-        result.setPassword(encoder.encode(password));
-        result.setNotes(new HashSet<>());
-        result = repo.save(result);
-        return result;
+    public User create(User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
+        user = repo.save(user);
+        return user;
     }
 
+    /**
+     * Find a user for this email if it exists
+     * @param email
+     * @return
+     */
     @Transactional(readOnly = true)
-    public User findByEmail(String email) {
-        return repo.findByEmail(email);
+    @Cacheable("user")
+    public Optional<User> getUserByEmail(String email) {
+        return Optional.ofNullable(repo.findByEmail(email));
     }
 
+    /**
+     * Update user
+     * This method does not update email or password.
+     * Use changeEmail or changePassword instead.
+     * @param user
+     * @return updated user
+     */
     @Transactional
-    public User setLocale(String locale) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = repo.findByEmail(email);
-        return setLocale(user, locale);
+    @CacheEvict(value = "user", key = "#user.email")
+    public User updateUser(User user) {
+        User originalUser = repo.findByEmail(user.getEmail());
+        User currentUser = authenticationService.getCurrentUser();
+        if(hasWriteAccess(currentUser, originalUser)) {
+            originalUser.setLocale(user.getLocale());
+            return repo.save(originalUser);
+        }
+        throw new OperationNotAllowedException();
     }
 
+    /**
+     * Change user's email
+     * @param user
+     * @param email
+     * @param password
+     * @return whether or not the change wass sucessfull
+     */
     @Transactional
-    public User setLocale(User user, String locale) {
-        user.setLocale(locale);
-        return repo.save(user);
-    }
-
-    @Transactional(readOnly = true)
-    public User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return repo.findByEmail(email);
-    }
-
-    @Transactional
+    @CacheEvict(value = "user", key = "#user.email")
     public boolean changeEmail(User user, String email, String password) {
-        if(encoder.matches(password, user.getPassword())) {
-            user.setEmail(email);
-            repo.save(user);
+        User originalUser = repo.findByEmail(user.getEmail());
+        User currentUser = authenticationService.getCurrentUser();
+        if (hasWriteAccess(currentUser, originalUser) && encoder.matches(password, currentUser.getPassword())) {
+            originalUser.setEmail(email);
+            repo.save(originalUser);
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Change user's password
+     * @param user
+     * @param oldPassword
+     * @param newPassword
+     * @return whether or not the change wass sucessfull
+     */
     @Transactional
+    @CacheEvict(value = "user", key = "#user.email")
     public boolean changePassword(User user, String oldPassword, String newPassword) {
-        if(encoder.matches(oldPassword, user.getPassword())) {
-            user.setPassword(encoder.encode(newPassword));
-            repo.save(user);
+        User originalUser = repo.findByEmail(user.getEmail());
+        User currentUser = authenticationService.getCurrentUser();
+        if (hasWriteAccess(currentUser, originalUser) && encoder.matches(oldPassword, currentUser.getPassword())) {
+            originalUser.setPassword(encoder.encode(newPassword));
+            repo.save(originalUser);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param currentUser
+     * @param targetUser
+     * @return whether or not the currentUser has write access to the targetUser
+     */
+    private boolean hasWriteAccess(User currentUser, User targetUser) {
+        return currentUser.getId() == targetUser.getId();
     }
 }

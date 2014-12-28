@@ -20,9 +20,9 @@ package com.jeanchampemont.notedown.note;
 import com.jeanchampemont.notedown.NoteDownApplication;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
-import com.jeanchampemont.notedown.user.persistence.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,12 +31,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = NoteDownApplication.class)
@@ -47,18 +44,27 @@ public class NoteServiceTest {
 
     private UserService userServiceMock;
 
+    private AuthenticationService authenticationServiceMock;
+
     @Before
     public void init() {
         repoMock = mock(NoteRepository.class);
         userServiceMock = mock(UserService.class);
-        sut = new NoteService(repoMock, userServiceMock);
+        authenticationServiceMock = mock(AuthenticationService.class);
+        sut = new NoteService(repoMock, userServiceMock, authenticationServiceMock);
     }
 
     @Test
     public void testGetAll() {
-        when(repoMock.findByOrderByLastModificationDesc()).thenReturn(Collections.emptyList());
+        User user = new User();
+
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.findByUserOrderByLastModificationDesc(user)).thenReturn(Collections.emptyList());
+
         sut.getAll();
-        verify(repoMock).findByOrderByLastModificationDesc();
+
+        verify(authenticationServiceMock).getCurrentUser();
+        verify(repoMock).findByUserOrderByLastModificationDesc(user);
     }
 
     @Test

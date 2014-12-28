@@ -20,6 +20,7 @@ package com.jeanchampemont.notedown.user.persistence;
 import com.jeanchampemont.notedown.note.persistence.Note;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -36,7 +37,7 @@ public class User {
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Note> notes;
+    private Set<Note> notes = new HashSet<>();
 
     @Column(name = "locale", length = 2)
     private String locale;

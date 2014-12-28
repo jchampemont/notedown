@@ -17,6 +17,7 @@
  */
 package com.jeanchampemont.notedown.config;
 
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.utils.PrettyTimeInterceptor;
 import com.jeanchampemont.notedown.utils.SecurityInterceptor;
@@ -53,8 +54,8 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public LocaleResolver localeResolver(UserService userService) {
-        UserLocaleResolver ulr = new UserLocaleResolver(userService);
+    public LocaleResolver localeResolver(UserService userService, AuthenticationService authenticationService) {
+        UserLocaleResolver ulr = new UserLocaleResolver(userService, authenticationService);
         return ulr;
     }
 }

@@ -23,6 +23,7 @@
 		<start-class>.com.jeanchampemont.notedown.NoteDownApplication</start-class>
 		<java.version>1.8</java.version>
         <prettytime.version>3.2.7.Final</prettytime.version>
+        <ehcache.version>2.9.0</ehcache.version>
 	</properties>
 
 	<dependencies>
@@ -45,6 +46,11 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>${ehcache.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ocpsoft.prettytime</groupId>

@@ -19,9 +19,10 @@ package com.jeanchampemont.notedown.user;
 
 
 import com.jeanchampemont.notedown.NoteDownApplication;
-import com.jeanchampemont.notedown.user.UserService;
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.user.persistence.repository.UserRepository;
+import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,21 +32,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashSet;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = NoteDownApplication.class)
 public class UserServiceTest {
     private UserService sut;
+
+    private AuthenticationService authenticationServiceMock;
 
     private UserRepository repoMock;
 
@@ -53,9 +53,10 @@ public class UserServiceTest {
 
     @Before
     public void init() {
+        authenticationServiceMock = mock(AuthenticationService.class);
         repoMock = mock(UserRepository.class);
         encoderMock = mock(PasswordEncoder.class);
-        sut = new UserService(repoMock, encoderMock);
+        sut = new UserService(authenticationServiceMock, repoMock, encoderMock);
     }
 
     @Test
@@ -66,42 +67,86 @@ public class UserServiceTest {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
-        user.setNotes(new HashSet<>());
-
-        when(repoMock.save(argThat(new UserMatcher(email, password)))).thenReturn(user);
-        when(encoderMock.encode(password)).thenReturn(password);
-
-        sut.create(email, password);
-
-        verify(encoderMock).encode(password);
-        verify(repoMock).save(argThat(new UserMatcher(email, password)));
-    }
-
-    @Test
-    public void testFindByEmail() {
-        String email = "toto@tata.fr";
-
-        User user = new User();
-
-        when(repoMock.findByEmail(email)).thenReturn(user);
-
-        sut.findByEmail(email);
-
-        verify(repoMock).findByEmail(email);
-    }
-
-    @Test
-    public void testSetLocale() {
-        String locale = "fr";
-
-        User user = new User();
 
         when(repoMock.save(user)).thenReturn(user);
+        when(encoderMock.encode(password)).thenReturn(password);
 
-        User result = sut.setLocale(user, locale);
+        User result = sut.create(user);
 
+        verify(encoderMock).encode(password);
         verify(repoMock).save(user);
+
+        assertEquals(email, result.getEmail());
+    }
+
+    @Test
+    public void testFindByEmailOK() {
+        String email = "toto@tata.fr";
+
+        when(repoMock.findByEmail(email)).thenReturn(new User());
+
+        Optional<User> result = sut.getUserByEmail(email);
+
+        verify(repoMock).findByEmail(email);
+
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    public void testFindByEmailKO() {
+        String email = "toto@tata.fr";
+
+        when(repoMock.findByEmail(email)).thenReturn(null);
+
+        Optional<User> result = sut.getUserByEmail(email);
+
+        verify(repoMock).findByEmail(email);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testUpdate() {
+        String locale = "fr";
+        String email = "titi@toto.fr";
+
+        User user = new User();
+        user.setId(12);
+        user.setEmail(email);
+        user.setLocale(locale);
+
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.save(user)).thenReturn(user);
+
+        User result = sut.updateUser(user);
+
+        verify(repoMock).findByEmail(email);
+        verify(repoMock).save(user);
+        verify(authenticationServiceMock).getCurrentUser();
         assertEquals(locale, user.getLocale());
+    }
+
+    @Test(expected = OperationNotAllowedException.class)
+    public void testUpdateNotAllowed() {
+        String locale = "fr";
+        String email = "titi@toto.fr";
+
+        User user = new User();
+        user.setId(12);
+        user.setEmail(email);
+        user.setLocale(locale);
+
+        User notAuthorizedUser = new User();
+        notAuthorizedUser.setId(42);
+
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(notAuthorizedUser);
+
+        User result = sut.updateUser(user);
+
+        verify(repoMock).findByEmail(email);
+        verify(authenticationServiceMock).getCurrentUser();
     }
 
     @Test
@@ -114,17 +159,16 @@ public class UserServiceTest {
         user.setEmail(email);
         user.setPassword(password);
 
-        User newUser = new User();
-        newUser.setEmail(newEmail);
-        newUser.setPassword(password);
-
-        when(repoMock.save(argThat(new UserMatcher(newEmail, password)))).thenReturn(newUser);
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(repoMock.save(user)).thenReturn(user);
         when(encoderMock.matches(password, password)).thenReturn(true);
 
         boolean success = sut.changeEmail(user, newEmail, password);
 
-        verify(repoMock).save(argThat(new UserMatcher(newEmail, password)));
-        verify(encoderMock).matches(password, password);
+        verify(repoMock).findByEmail(email);
+        verify(repoMock).save(user);
+        verify(authenticationServiceMock).getCurrentUser();
 
         assertTrue(success);
     }
@@ -139,11 +183,37 @@ public class UserServiceTest {
         user.setEmail(email);
         user.setPassword(password);
 
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(encoderMock.matches(anyString(), eq(password))).thenReturn(false);
 
         boolean success = sut.changeEmail(user, newEmail, "wrongPassword");
 
+        verify(repoMock).findByEmail(email);
         verify(encoderMock).matches(anyString(), eq(password));
+
+        assertFalse(success);
+    }
+
+    @Test
+    public void testChangeEmailNotAllowed() {
+        String email = "toto@tata.fr";
+        String newEmail = "tata@toto.fr";
+        String password = "password";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        User notAuthorizedUser = new User();
+        notAuthorizedUser.setId(42);
+
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(notAuthorizedUser);
+
+        boolean success = sut.changeEmail(user, newEmail, password);
+
+        verify(repoMock).findByEmail(email);
 
         assertFalse(success);
     }
@@ -158,19 +228,19 @@ public class UserServiceTest {
         user.setEmail(email);
         user.setPassword(password);
 
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setPassword(newPassword);
-
-        when(repoMock.save(argThat(new UserMatcher(email, newPassword)))).thenReturn(newUser);
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(encoderMock.matches(password, password)).thenReturn(true);
         when(encoderMock.encode(newPassword)).thenReturn(newPassword);
+        when(repoMock.save(user)).thenReturn(user);
 
         boolean success = sut.changePassword(user, password, newPassword);
 
-        verify(repoMock).save(argThat(new UserMatcher(email, newPassword)));
+        verify(repoMock).findByEmail(email);
+        verify(authenticationServiceMock).getCurrentUser();
         verify(encoderMock).matches(password, password);
         verify(encoderMock).encode(newPassword);
+        verify(repoMock).save(user);
 
         assertTrue(success);
     }
@@ -179,33 +249,44 @@ public class UserServiceTest {
     public void testChangePasswordKO() {
         String email = "toto@tata.fr";
         String password = "password";
+        String newPassword = "superSafePassword";
 
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
 
-        when(encoderMock.matches(anyString(), eq(password))).thenReturn(false);
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
+        when(encoderMock.matches("wrongPassword", password)).thenReturn(false);
 
-        boolean success = sut.changePassword(user, password, "wrongPassword");
+        boolean success = sut.changePassword(user, "wrongPassword", newPassword);
 
+        verify(repoMock).findByEmail(email);
         verify(encoderMock).matches(anyString(), eq(password));
 
         assertFalse(success);
     }
 
-    private class UserMatcher extends ArgumentMatcher<User> {
+    @Test
+    public void testChangePasswordNotAllowed() {
+        String email = "toto@tata.fr";
+        String password = "password";
+        String newPassword = "superSafePassword";
 
-        private String email;
-        private String password;
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
 
-        private UserMatcher(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
+        User notAuthorizedUser = new User();
+        notAuthorizedUser.setId(42);
 
-        @Override
-        public boolean matches(Object u) {
-            return ((User) u).getEmail().equals(email) && ((User) u).getPassword().equals(password);
-        }
+        when(repoMock.findByEmail(email)).thenReturn(user);
+        when(authenticationServiceMock.getCurrentUser()).thenReturn(notAuthorizedUser);
+
+        boolean success = sut.changePassword(user, password, newPassword);
+
+        verify(repoMock).findByEmail(email);
+
+        assertFalse(success);
     }
 }

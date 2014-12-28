@@ -41,8 +41,11 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent e) {
-        User user = userService.create("admin@world.com", "admin");
-        userService.setLocale(user, "fr");
+        User user = new User();
+        user.setEmail("admin@world.com");
+        user.setPassword("admin");
+        user.setLocale("fr");
+        user = userService.create(user);
         noteService.save(user, new Note("Test 1", "BLA BLA BLA"));
         noteService.save(user, new Note("Test 2", "BLA BLA BLA"));
         noteService.save(user, new Note("Test 3", "BLA BLA BLA"));

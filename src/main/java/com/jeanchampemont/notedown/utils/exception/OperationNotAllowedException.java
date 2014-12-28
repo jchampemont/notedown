@@ -15,15 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jeanchampemont.notedown.note.persistence.repository;
+package com.jeanchampemont.notedown.utils.exception;
 
-import com.jeanchampemont.notedown.note.persistence.Note;
-import com.jeanchampemont.notedown.user.persistence.User;
-import org.springframework.data.repository.CrudRepository;
+public class OperationNotAllowedException extends RuntimeException {
 
-import java.util.List;
-import java.util.UUID;
-
-public interface NoteRepository extends CrudRepository<Note, UUID> {
-    List<Note> findByUserOrderByLastModificationDesc(User user);
 }

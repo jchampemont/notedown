@@ -17,6 +17,7 @@
  */
 package com.jeanchampemont.notedown.utils;
 
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * A LocaleResolver which use User's settings to determine Locale.
@@ -36,10 +38,13 @@ public class UserLocaleResolver implements LocaleResolver {
 
     private UserService userService;
 
+    private AuthenticationService authenticationService;
+
     private AcceptHeaderLocaleResolver acceptHeaderLocaleResolver;
 
-    public UserLocaleResolver(UserService userService) {
+    public UserLocaleResolver(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
+        this.authenticationService = authenticationService;
         this.acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
     }
 
@@ -49,15 +54,17 @@ public class UserLocaleResolver implements LocaleResolver {
             return acceptHeaderLocaleResolver.resolveLocale(request);
         }
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userService.findByEmail(email);
-        if(user == null || StringUtils.isEmpty(user.getLocale())) {
+        Optional<User> user = userService.getUserByEmail(email);
+        if( ! user.isPresent() || StringUtils.isEmpty(user.get().getLocale())) {
             return acceptHeaderLocaleResolver.resolveLocale(request);
         }
-        return Locale.forLanguageTag(user.getLocale());
+        return user.map(u -> Locale.forLanguageTag(u.getLocale())).get();
     }
 
     @Override
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-        userService.setLocale(locale.getLanguage());
+        User user = authenticationService.getCurrentUser();
+        user.setLocale(locale.getLanguage());
+        userService.updateUser(user);
     }
 }

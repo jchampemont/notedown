@@ -17,6 +17,7 @@
  */
 package com.jeanchampemont.notedown.web;
 
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.web.form.SettingsLanguageForm;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/app/settings")
@@ -43,12 +45,12 @@ public class SettingsController {
 
     private UserService userService;
 
-    private AuthenticationManager authenticationManager;
+    private AuthenticationService authenticationService;
 
     @Autowired
-    public SettingsController(UserService userService, AuthenticationManager authenticationManager) {
+    public SettingsController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
+        this.authenticationService = authenticationService;
     }
 
     @Value("${notedown.available-locales}")
@@ -62,28 +64,26 @@ public class SettingsController {
     @RequestMapping(value="/user", method = RequestMethod.GET)
     public String user(ModelMap model) {
         model.put("tab", "user");
-        model.put("user", userService.getCurrentUser());
+        model.put("user", authenticationService.getCurrentUser());
         return "settings";
     }
 
     @RequestMapping(value="/user", method = RequestMethod.POST)
     public String updateUser(SettingsUserForm form, ModelMap model) {
-        User user = userService.getCurrentUser();
+        User user = authenticationService.getCurrentUser();
 
         boolean success = true;
         boolean hasChanged = false;
         if(!user.getEmail().equals(form.getEmail())) {
             hasChanged = true;
-            User existingUser = userService.findByEmail(form.getEmail());
-            if(existingUser == null) {
+            Optional<User> existingUser = userService.getUserByEmail(form.getEmail());
+            if(! existingUser.isPresent()) {
                 success = userService.changeEmail(user, form.getEmail(), form.getOldPassword());
                 if(!success) {
                     model.put("wrongPassword", true);
                 } else {
                     //Changing email need new authentication
-                    Authentication request = new UsernamePasswordAuthenticationToken(user.getEmail(), form.getOldPassword());
-                    Authentication result = authenticationManager.authenticate(request);
-                    SecurityContextHolder.getContext().setAuthentication(result);
+                    authenticationService.newAuthentication(user.getEmail(), form.getOldPassword());
                 }
             } else {
                 success = false;
@@ -106,15 +106,16 @@ public class SettingsController {
     public String lang(ModelMap model) {
         model.put("tab", "lang");
         model.put("availableLanguages", availableLanguages());
-        model.put("selectedLanguage", userService.getCurrentUser().getLocale());
+        model.put("selectedLanguage", authenticationService.getCurrentUser().getLocale());
         return "settings";
     }
 
     @RequestMapping(value="/lang", method = RequestMethod.POST)
     public String updateLang(SettingsLanguageForm form, ModelMap model) {
-        User user = userService.getCurrentUser();
+        User user = authenticationService.getCurrentUser();
         if(! user.getLocale().equals(form.getLocale())) {
-            userService.setLocale(user, form.getLocale());
+            user.setLocale(form.getLocale());
+            userService.updateUser(user);
         }
         model.put("success", true);
         return lang(model);
