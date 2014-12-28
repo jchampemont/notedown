@@ -70,7 +70,7 @@ public class SettingsController {
 
         boolean success = true;
         boolean hasChanged = false;
-        if (!user.getEmail().equals(form.getEmail())) {
+        if (!user.getEmail().equals(form.getEmail().toLowerCase())) {
             hasChanged = true;
             Optional<User> existingUser = userService.getUserByEmail(form.getEmail());
             if (!existingUser.isPresent()) {
