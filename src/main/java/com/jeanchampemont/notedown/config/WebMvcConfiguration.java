@@ -25,6 +25,7 @@ import com.jeanchampemont.notedown.utils.UserLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -48,5 +49,12 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     public LocaleResolver localeResolver(UserService userService, AuthenticationService authenticationService) {
         UserLocaleResolver ulr = new UserLocaleResolver(userService, authenticationService);
         return ulr;
+    }
+
+    @Bean
+    public CharacterEncodingFilter characterEncodingFilter() {
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        return characterEncodingFilter;
     }
 }
