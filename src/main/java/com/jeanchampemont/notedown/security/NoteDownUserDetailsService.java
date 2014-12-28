@@ -41,7 +41,7 @@ public class NoteDownUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(s);
+        User user = userRepository.findByEmailIgnoreCase(s);
         if (user == null) {
             throw new UsernameNotFoundException("not found");
         }

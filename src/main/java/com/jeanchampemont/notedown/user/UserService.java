@@ -60,6 +60,7 @@ public class UserService {
     @Transactional
     public User create(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setEmail(user.getEmail().toLowerCase());
         user = repo.save(user);
         return user;
     }
@@ -72,7 +73,7 @@ public class UserService {
     @Transactional(readOnly = true)
     @Cacheable("user")
     public Optional<User> getUserByEmail(String email) {
-        return Optional.ofNullable(repo.findByEmail(email));
+        return Optional.ofNullable(repo.findByEmailIgnoreCase(email));
     }
 
     /**
@@ -85,7 +86,7 @@ public class UserService {
     @Transactional
     @CacheEvict(value = "user", key = "#user.email")
     public User update(User user) {
-        User originalUser = repo.findByEmail(user.getEmail());
+        User originalUser = repo.findByEmailIgnoreCase(user.getEmail());
         User currentUser = authenticationService.getCurrentUser();
         if (hasWriteAccess(currentUser, originalUser)) {
             originalUser.setLocale(user.getLocale());
@@ -104,7 +105,7 @@ public class UserService {
     @Transactional
     @CacheEvict(value = "user", key = "#user.email")
     public boolean changeEmail(User user, String email, String password) {
-        User originalUser = repo.findByEmail(user.getEmail());
+        User originalUser = repo.findByEmailIgnoreCase(user.getEmail());
         User currentUser = authenticationService.getCurrentUser();
         if (hasWriteAccess(currentUser, originalUser) && encoder.matches(password, currentUser.getPassword())) {
             originalUser.setEmail(email);
@@ -125,7 +126,7 @@ public class UserService {
     @Transactional
     @CacheEvict(value = "user", key = "#user.email")
     public boolean changePassword(User user, String oldPassword, String newPassword) {
-        User originalUser = repo.findByEmail(user.getEmail());
+        User originalUser = repo.findByEmailIgnoreCase(user.getEmail());
         User currentUser = authenticationService.getCurrentUser();
         if (hasWriteAccess(currentUser, originalUser) && encoder.matches(oldPassword, currentUser.getPassword())) {
             originalUser.setPassword(encoder.encode(newPassword));
