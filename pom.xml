@@ -5,7 +5,7 @@
 
 	<groupId>com.jeanchampemont.notedown</groupId>
 	<artifactId>notedown</artifactId>
-	<version>0.0.1-RC</version>
+	<version>0.1.0-RC</version>
 	<packaging>jar</packaging>
 
 	<name>NoteDown</name>
