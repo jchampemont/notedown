@@ -22,16 +22,17 @@ $(function() {
         var textareaHeight = windowHeight - 145;
         $('#editor').css('height', textareaHeight);
         $('#preview').css('height', textareaHeight);
+        render();
     };
 
     var render = function() {
-        if($('#toggle-preview-pane').is(":checked")) {
+        if($('#toggle-preview-pane').is(":checked") && $('#toggle-preview-pane').is(":visible")) {
             $('#preview').html(marked($('#editor').val()));
         }
     };
 
     var scroll = function() {
-        if($('#toggle-preview-pane').is(":checked")) {
+        if($('#toggle-preview-pane').is(":checked") && $('#toggle-preview-pane').is(":visible")) {
             $("#preview").scrollTop($("#editor").scrollTop());
         }
     };

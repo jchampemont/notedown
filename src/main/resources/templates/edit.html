@@ -11,11 +11,11 @@
             <div class="editor-container col-sm-6">
                 <textarea class="form-control" id="editor" th:text="${note.content}" name="content" ></textarea>
             </div>
-            <div class="editor-container col-sm-6">
+            <div class="editor-container col-sm-6 hidden-xs">
                 <div class="editor-preview" id="preview"></div>
             </div>
             <div class="editor-toolbar col-xs-12">
-                <label>
+                <label class="hidden-xs">
                     <input type="checkbox" id="toggle-preview-pane" checked="checked" /> <span th:text="#{notedown.templates.edit.toggle-preview}"></span>
                 </label>
                 <input type="submit" class="btn btn-primary btn-sm pull-right" th:value="#{notedown.templates.edit.save-action}" />
