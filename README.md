@@ -19,13 +19,13 @@ Installation for developers
 - Run NoteDown from Maven : `mvn spring-boot:run`
 - Connect to the application at http://127.0.0.1:8080
 
-A default user is created : `admin@world.com` password : `admin`.
-
 An in-memory embedded H2 Database is used for development needs.
 
 Installation for production use
 -------------------------------
-See INSTALL.md file.
+Download latest release from here : https://github.com/jchampemont/notedown/releases
+
+See bundled INSTALL.md file for installation details.
 
 
 Upgrading from a previous version
