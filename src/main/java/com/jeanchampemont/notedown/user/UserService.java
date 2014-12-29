@@ -52,6 +52,15 @@ public class UserService {
     }
 
     /**
+     *
+     * @return whether or not the application has at least one registered user.
+     */
+    @Transactional(readOnly = true)
+    public boolean hasRegisteredUser() {
+        return repo.findAll().iterator().hasNext();
+    }
+
+    /**
      * Create the user.
      * The password is encoded.
      * @param user

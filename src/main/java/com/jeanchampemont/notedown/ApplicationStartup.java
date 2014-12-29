@@ -17,16 +17,12 @@
  */
 package com.jeanchampemont.notedown;
 
-import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.user.UserService;
-import com.jeanchampemont.notedown.user.persistence.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Component
 public class ApplicationStartup implements ApplicationListener<ContextRefreshedEvent> {
@@ -43,23 +39,6 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent e) {
-        //Init with some sample Data
-        User user = new User();
-        user.setEmail("admin@world.com");
-        user.setPassword("admin");
-        user.setLocale("fr");
-        user = userService.create(user);
-        Note note = new Note("Test 1", "BLA BLA BLA", user);
-        note.setLastModification(new Date());
-        noteRepository.save(note);
-        note = new Note("Test 2", "BLA BLA BLA", user);
-        note.setLastModification(new Date());
-        noteRepository.save(note);
-        note = new Note("Test 3", "BLA BLA BLA", user);
-        note.setLastModification(new Date());
-        noteRepository.save(note);
-        note = new Note("Test 4", "BLA BLA BLA", user);
-        note.setLastModification(new Date());
-        noteRepository.save(note);
+
     }
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="common/template :: head (title=#{notedown.templates.welcome.title})"></head>
+    <body>
+        <div th:replace="common/template :: header (page='app')"></div>
+        <div class="container">
+            <h1 th:text="#{notedown.templates.welcome.lead}"></h1>
+            <p th:text="#{notedown.templates.welcome.text}"></p>
+            <div class="alert alert-danger" th:if="${wrongEmail}" th:text="#{notedown.templates.welcome.wrong-email}"></div>
+            <div class="alert alert-danger" th:if="${wrongPassword}" th:text="#{notedown.templates.welcome.wrong-password}"></div>
+            <div class="alert alert-danger" th:if="${wrongConfirmation}" th:text="#{notedown.templates.welcome.wrong-confirmation}"></div>
+            <form  th:action="@{/welcome}" method="post" class="form-horizontal">
+                <div class="form-group">
+                    <label for="email" class="col-sm-2 control-label" th:text="#{notedown.templates.welcome.email}"></label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="email" name="email" th:placeholder="#{notedown.templates.welcome.email}" th:value="${form.email}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-2 control-label" th:text="#{notedown.templates.welcome.password}" th:value="${form.password}"></label>
+                    <div class="col-sm-6">
+                        <input type="password" class="form-control" id="password" name="password" th:placeholder="#{notedown.templates.welcome.password}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="passwordConfirmation" class="col-sm-2 control-label" th:text="#{notedown.templates.welcome.confirm-password}"></label>
+                    <div class="col-sm-6">
+                        <input type="password" class="form-control" id="passwordConfirmation" name="passwordConfirmation" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default" th:text="#{notedown.templates.welcome.continue-action}"></button>
+                    </div>
+                </div>
+            </form>
+            <div th:replace="common/template :: footer(displayText=true)"></div>
+        </div>
+    </body>
+</html>

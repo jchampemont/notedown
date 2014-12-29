@@ -17,6 +17,10 @@
  */
 package com.jeanchampemont.notedown.web;
 
+import com.jeanchampemont.notedown.user.UserService;
+import com.jeanchampemont.notedown.user.persistence.User;
+import com.jeanchampemont.notedown.web.form.InstallForm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,18 +30,57 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 @RequestMapping("/")
 public class IndexController {
+
+    private UserService userService;
+
+    @Autowired
+    public IndexController(UserService userService) {
+        this.userService = userService;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public String home(ModelMap model) {
         return "home";
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "login", method = RequestMethod.GET)
     public String login(WebRequest req, ModelMap model) {
-        if (req.getParameter("error") != null) {
-            model.put("error", true);
-        } else if (req.getParameter("logout") != null) {
-            model.put("logout", true);
+        if(userService.hasRegisteredUser()) {
+            if (req.getParameter("error") != null) {
+                model.put("error", true);
+            } else if (req.getParameter("logout") != null) {
+                model.put("logout", true);
+            } else if (req.getParameter("install") != null) {
+                model.put("install", true);
+            }
+            return "login";
+        } else {
+            model.put("form", new InstallForm());
+            return "welcome";
         }
-        return "login";
+    }
+
+    @RequestMapping(value = "welcome", method = RequestMethod.POST)
+    public String install(InstallForm form, ModelMap model) {
+        //Only the first account should be created from here.
+        if(! userService.hasRegisteredUser()) {
+            model.put("form", form);
+            //Basic email validation...
+            if(!form.getEmail().contains("@")) {
+                model.put("wrongEmail", true);
+                return "welcome";
+            } else if(form.getPassword().length() < 6) {
+                model.put("wrongPassword", true);
+                return "welcome";
+            } else if(!form.getPassword().equals(form.getPasswordConfirmation())) {
+                model.put("wrongConfirmation", true);
+                return "welcome";
+            }
+            User user = new User();
+            user.setEmail(form.getEmail());
+            user.setPassword(form.getPassword());
+            userService.create(user);
+        }
+        return "redirect:/login?install";
     }
 }

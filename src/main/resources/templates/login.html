@@ -2,8 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="common/template :: head (title=#{notedown.templates.login.title})"></head>
 <body>
-    <div th:replace="common/template :: header (page='')"></div>
+    <div th:replace="common/template :: header (page='app')"></div>
     <div class="container">
+        <div class="alert alert-success" th:if="${install}" th:text="#{notedown.templates.login.install-success}"></div>
         <form class="form-signin" method="post" th:action="@{/login}">
             <div class="alert alert-danger" th:if="${error}" th:text="#{notedown.templates.login.login-error}"></div>
             <div class="alert alert-success" th:if="${logout}" th:text="#{notedown.templates.login.logout-success}"></div>
