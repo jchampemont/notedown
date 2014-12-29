@@ -5,11 +5,11 @@
 
 	<groupId>com.jeanchampemont.notedown</groupId>
 	<artifactId>notedown</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-RC</version>
 	<packaging>jar</packaging>
 
 	<name>NoteDown</name>
-	<description>TODO</description>
+	<description>NoteDown is a MarkDown-powered simple note-taking application.</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -20,8 +20,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<start-class>.com.jeanchampemont.notedown.NoteDownApplication</start-class>
+		<start-class>com.jeanchampemont.notedown.NoteDownApplication</start-class>
 		<java.version>1.8</java.version>
+        <postgresql.version>9.3-1102-jdbc41</postgresql.version>
         <prettytime.version>3.2.7.Final</prettytime.version>
         <ehcache.version>2.9.0</ehcache.version>
 	</properties>
@@ -46,6 +47,15 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>

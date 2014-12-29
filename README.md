@@ -25,7 +25,7 @@ An in-memory embedded H2 Database is used for development needs.
 
 Installation for production use
 -------------------------------
-Not yet ready for production use
+See INSTALL.md file.
 
 
 Upgrading from a previous version
