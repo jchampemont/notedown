@@ -109,7 +109,7 @@ public class SettingsController {
     @RequestMapping(value = "/lang", method = RequestMethod.POST)
     public String updateLang(SettingsLanguageForm form, ModelMap model) {
         User user = authenticationService.getCurrentUser();
-        if (!user.getLocale().equals(form.getLocale())) {
+        if (user.getLocale() == null || !user.getLocale().equals(form.getLocale())) {
             user.setLocale(form.getLocale());
             userService.update(user);
         }
