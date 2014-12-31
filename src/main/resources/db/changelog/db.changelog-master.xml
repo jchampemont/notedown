@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+
+    <changeSet author="jchampemont" id="1">
+        <createTable tableName="persistent_logins">
+            <column name="username" type="VARCHAR(64)">
+                <constraints nullable="false" />
+            </column>
+            <column name="series" type="VARCHAR(64)">
+                <constraints nullable="false" />
+            </column>
+            <column name="token" type="VARCHAR(64)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_used" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="2">
+        <createTable tableName="hibernate_sequences">
+            <column name="sequence_name" type="VARCHAR(255)"/>
+            <column name="sequence_next_hi_value" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="3">
+        <createTable tableName="note">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="CLOB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modification" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="4">
+        <createTable tableName="user_account">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(64)"/>
+            <column name="locale" type="VARCHAR(2)"/>
+            <column name="password" type="VARCHAR(60)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="5">
+        <addPrimaryKey columnNames="id" constraintName="notePK" tableName="note"/>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="6">
+        <addPrimaryKey columnNames="id" constraintName="user_accountPK" tableName="user_account"/>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="7">
+        <addUniqueConstraint columnNames="email" constraintName="UC_USER_ACCOUNT_EMAIL_COL" deferrable="false" disabled="false" initiallyDeferred="false" tableName="user_account"/>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="8">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note" constraintName="FK_NOTE_USER_ACCOUNT" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_account"/>
+    </changeSet>
+</databaseChangeLog>
