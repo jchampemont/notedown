@@ -19,7 +19,7 @@ Installation for developers
 - Run NoteDown from Maven : `mvn spring-boot:run`
 - Connect to the application at http://127.0.0.1:8080
 
-An in-memory embedded H2 Database is used for development needs.
+An in-memory embedded HSQLDB Database is used for development needs.
 
 Installation for production use
 -------------------------------
