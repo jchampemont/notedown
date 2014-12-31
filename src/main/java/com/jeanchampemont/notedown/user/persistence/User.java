@@ -27,7 +27,7 @@ import java.util.Set;
 @Table(name = "user_account")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private long id;
 
     @Column(name = "email", unique = true, length = 64)
