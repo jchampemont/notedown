@@ -32,7 +32,7 @@ Upgrading from a previous version
 ---------------------------------------
 Upgrading is normally just a matter of using a newer version of the application.
 
-Database schema upgrades should be handled gracefully by Hibernate.
+Database schema upgrades should be handled gracefully thanks to liquibase migrations.
 
 Contributing
 ------------
