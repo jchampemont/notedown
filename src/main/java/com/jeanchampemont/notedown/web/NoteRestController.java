@@ -19,6 +19,7 @@ package com.jeanchampemont.notedown.web;
 
 import com.jeanchampemont.notedown.note.NoteService;
 import com.jeanchampemont.notedown.note.persistence.Note;
+import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.web.api.NoteDto;
 import com.jeanchampemont.notedown.web.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,12 @@ public class NoteRestController {
 
     private NoteService noteService;
 
+    private AuthenticationService authenticationService;
+
     @Autowired
-    public NoteRestController(NoteService noteService) {
+    public NoteRestController(NoteService noteService, AuthenticationService authenticationService) {
         this.noteService = noteService;
+        this.authenticationService = authenticationService;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -46,11 +50,24 @@ public class NoteRestController {
         if (note == null) {
             throw new ResourceNotFoundException();
         }
-        NoteDto result = new NoteDto();
-        result.setId(note.getId().toString());
-        result.setTitle(note.getTitle());
-        result.setContent(note.getContent());
+        NoteDto result = mapNoteToNoteDto(note);
         return result;
     }
 
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public NoteDto save(NoteDto note) {
+        Note n = new Note(note.getTitle(), note.getContent(), authenticationService.getCurrentUser());
+        n.setId(UUID.fromString(note.getId()));
+        n = noteService.createUpdate(n);
+        NoteDto result = mapNoteToNoteDto(n);
+        return result;
+    }
+
+    private NoteDto mapNoteToNoteDto(Note n) {
+        NoteDto result = new NoteDto();
+        result.setId(n.getId().toString());
+        result.setTitle(n.getTitle());
+        result.setContent(n.getContent());
+        return result;
+    }
 }

@@ -4,9 +4,9 @@
     <body>
         <div th:replace="common/template :: header (page='app')"></div>
         <form method="post" th:action="@{/app/note}">
-            <input type="hidden" name="id" th:value="${note.id}" />
+            <input type="hidden" id="id" name="id" th:value="${note.id}" />
             <div class="editor-container-title col-sm-12">
-                <input type="text" name="title" class="form-control" th:value="${note.title}" th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
+                <input type="text" id="title" name="title" class="form-control" th:value="${note.title}" th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
             </div>
             <div class="editor-container col-sm-6">
                 <textarea class="form-control" id="editor" th:text="${note.content}" name="content" ></textarea>
@@ -18,7 +18,10 @@
                 <label class="hidden-xs">
                     <input type="checkbox" id="toggle-preview-pane" checked="checked" /> <span th:text="#{notedown.templates.edit.toggle-preview}"></span>
                 </label>
-                <input type="submit" class="btn btn-primary btn-sm pull-right" th:value="#{notedown.templates.edit.save-action}" />
+                <label class="hidden-xs">
+                    <input type="checkbox" id="toggle-autosave" /> <span th:text="#{notedown.templates.edit.toggle-autosave}"></span>
+                </label>
+                <button type="submit" class="btn btn-primary btn-sm pull-right" th:text="#{notedown.templates.edit.save-action}" th:attr="data-loading-text=#{notedown.templates.edit.save-loading}" id="submit-btn" />
             </div>
         </form>
         <div th:replace="common/template :: footer"></div>

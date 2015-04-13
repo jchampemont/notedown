@@ -56,9 +56,52 @@ $(function() {
         }
     };
 
+    var saveInProgress = false;
+    var save = function() {
+        if(!saveInProgress && ($("#title").val().length > 0 || $("#editor").val().length > 0)) {
+            saveInProgress = true;
+            $("#submit-btn").button("loading");
+            var note = {
+                id: $("#id").val(),
+                title: $("#title").val(),
+                content: $("#editor").val()
+            };
+            var headers = {};
+            headers[$("meta[name='_csrf_header']").attr("content")] = $("meta[name='_csrf']").attr("content");
+            $.ajax({
+                type: "POST",
+                url: "/api/note/",
+                data: note,
+                headers: headers,
+                success: function(data) {
+                    $("#id").val(data.id);
+                    saveInProgress = false;
+                    $("#submit-btn").button("reset");
+                }
+            });
+        }
+    };
+
+    var lastAutoSave = undefined;
+    var autoSave = function() {
+        if($("#toggle-autosave").is(':checked')) {
+            clearTimeout(lastAutoSave);
+            lastAutoSave = setTimeout(function() {
+                save();
+            }, 2000);
+        }
+    };
+
+    var toggleAutoSave = function() {
+        if($("#toggle-autosave").is(':checked')) {
+            save();
+        }
+    };
+
     $(window).resize(handleResize);
 
     $('#editor').keyup(function() {
+        autoSave();
         render();
         scrollToEndWhenEditAtEnd();
     });
@@ -66,6 +109,7 @@ $(function() {
     $("#editor").scroll(scroll);
 
     $('#toggle-preview-pane').change(togglePreviewPane);
+    $("#toggle-autosave").change(toggleAutoSave)
 
     handleResize();
     render();
