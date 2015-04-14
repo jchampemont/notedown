@@ -36,6 +36,7 @@ public class Note {
 
     @Column(name = "content", nullable = false)
     @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     private String content;
 
     @Column(name = "last_modification", nullable = false)
