@@ -56,8 +56,36 @@
             </footer>
             <script src="/js/jquery-2.1.3.min.js"></script>
             <script src="/js/jquery.caret.js"></script>
+            <script src="/js/jquery.timeago.js"></script>
             <script src="/js/bootstrap.min.js"></script>
             <script src="/js/marked.min.js"></script>
+            <script th:inline="javascript">
+            /*<![CDATA[*/
+                jQuery.timeago.settings.strings = {
+                   prefixAgo: [[#{notedown.javascript.timeago.prefix-ago}]],
+                   prefixFromNow: [[#{notedown.javascript.timeago.prefix-from-now}]],
+                   suffixAgo: [[#{notedown.javascript.timeago.suffix-ago}]],
+                   suffixFromNow: [[#{notedown.javascript.timeago.suffix-from-now}]],
+                   seconds: [[#{notedown.javascript.timeago.seconds}]],
+                   minute: [[#{notedown.javascript.timeago.minute}]],
+                   minutes: [[#{notedown.javascript.timeago.minutes}]],
+                   hour: [[#{notedown.javascript.timeago.hour}]],
+                   hours: [[#{notedown.javascript.timeago.hours}]],
+                   day: [[#{notedown.javascript.timeago.day}]],
+                   days: [[#{notedown.javascript.timeago.days}]],
+                   month: [[#{notedown.javascript.timeago.month}]],
+                   months: [[#{notedown.javascript.timeago.month}]],
+                   year: [[#{notedown.javascript.timeago.year}]],
+                   years: [[#{notedown.javascript.timeago.years}]]
+                };
+
+                var notedown = {
+                    javascript: {
+                        exitWarning: [[#{notedown.javascript.exit-warning}]]
+                    }
+                }
+            /*]]>*/
+            </script>
         </div>
     </body>
 </html>

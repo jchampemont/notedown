@@ -109,3 +109,7 @@ body {
 .editor-toolbar label {
     margin-top: 10px;
 }
+
+.editor-toolbar span {
+    margin-top: 10px;
+}

@@ -60,7 +60,8 @@ $(function() {
     var save = function() {
         if(!saveInProgress && ($("#title").val().length > 0 || $("#editor").val().length > 0)) {
             saveInProgress = true;
-            $("#submit-btn").button("loading");
+            $("#saved-label").addClass("hide");
+            $("#saving-label").removeClass("hide");
             var note = {
                 id: $("#id").val(),
                 title: $("#title").val(),
@@ -76,26 +77,25 @@ $(function() {
                 success: function(data) {
                     $("#id").val(data.id);
                     saveInProgress = false;
-                    $("#submit-btn").button("reset");
+                    $("#saved-label #timeago").remove();
+                    $("#saved-label").append("<span id=\"timeago\" title=\"" + new Date().toISOString() + "\"></span>");
+                    $("#timeago").timeago();
+                    $("#saved-label").removeClass("hide");
+                    $("#saving-label").addClass("hide");
                 }
             });
         }
     };
 
     var lastAutoSave = undefined;
+    var saveNeeded = false;
     var autoSave = function() {
-        if($("#toggle-autosave").is(':checked')) {
-            clearTimeout(lastAutoSave);
-            lastAutoSave = setTimeout(function() {
-                save();
-            }, 2000);
-        }
-    };
-
-    var toggleAutoSave = function() {
-        if($("#toggle-autosave").is(':checked')) {
+        saveNeeded = true;
+        clearTimeout(lastAutoSave);
+        lastAutoSave = setTimeout(function() {
             save();
-        }
+            saveNeeded = false;
+        }, 2000);
     };
 
     $(window).resize(handleResize);
@@ -108,9 +108,18 @@ $(function() {
 
     $("#editor").scroll(scroll);
 
-    $('#toggle-preview-pane').change(togglePreviewPane);
-    $("#toggle-autosave").change(toggleAutoSave)
+    $("#toggle-preview-pane").change(togglePreviewPane);
 
+    if($("#timeago").prop("title").length > 0) {
+        $("#timeago").timeago();
+        $("#saved-label").removeClass("hide");
+    }
+
+    $(window).bind("beforeunload", function() {
+        if (saveNeeded) {
+            return notedown.javascript.exitWarning;
+        }
+    });
     handleResize();
     render();
 });
