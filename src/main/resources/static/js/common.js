@@ -16,9 +16,14 @@
  * limitations under the License.
  */
  $(function() {
+    //Setting marked.js options
     marked.setOptions({
         highlight: function(code) {
             return hljs.highlightAuto(code).value;
         }
     });
+
+    //taboverride.js options
+    tabOverride.tabSize(4);
+
  });

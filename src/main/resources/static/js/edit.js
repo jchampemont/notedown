@@ -122,4 +122,6 @@ $(function() {
     });
     handleResize();
     render();
+
+    tabOverride.set($("#editor")[0]);
 });
