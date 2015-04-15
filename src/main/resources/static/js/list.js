@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 NoteDown
+ * Copyright (C) 2014, 2015 NoteDown
  *
  * This file is part of the NoteDown project.
  *

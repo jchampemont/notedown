@@ -54,7 +54,7 @@ Contributors
 License
 -------
 
-Copyright 2014 [Jean Champémont](http://www.jeanchampemont.com)
+Copyright 2014, 2015 [Jean Champémont](http://www.jeanchampemont.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this application except in compliance with the License.
