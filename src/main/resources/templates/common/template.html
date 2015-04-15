@@ -7,7 +7,7 @@
         <meta name="_csrf" th:content="${_csrf.token}"/>
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
         <title th:text="${title}"></title>
-        <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/webjars/bootstrap/3.3.4/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="/css/custom.css"/>
     </head>
     <body>
@@ -54,11 +54,11 @@
             <footer th:if="${displayText}">
                 <p><span th:text="#{notedown.footer}"></span> <span th:text="${notedownVersion}"></span></p>
             </footer>
-            <script src="/js/jquery-2.1.3.min.js"></script>
+            <script src="/webjars/jquery/2.1.3/jquery.min.js"></script>
             <script src="/js/jquery.caret.js"></script>
             <script src="/js/jquery.timeago.js"></script>
-            <script src="/js/bootstrap.min.js"></script>
-            <script src="/js/marked.min.js"></script>
+            <script src="/webjars/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+            <script src="/webjars/marked/0.3.2/marked.js"></script>
             <script th:inline="javascript">
             /*<![CDATA[*/
                 jQuery.timeago.settings.strings = {
