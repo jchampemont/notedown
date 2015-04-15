@@ -22,7 +22,11 @@ $(function() {
     };
 
     var renderPreviewModal = function(note) {
-        $('#preview-modal .modal-title').html(note.title);
+        if(note.title.length > 0) {
+            $('#preview-modal .modal-title').html(note.title);
+        } else {
+            $('#preview-modal .modal-title').html(notedown.javascript.emptyTitle);
+        }
         $('#preview-modal .modal-body').html(marked(note.content));
         $('#preview-modal').modal('show');
     };

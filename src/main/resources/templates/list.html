@@ -28,7 +28,8 @@
                     <tbody>
                         <tr th:each="note : ${notes}">
                             <td>
-                                <span th:text="${note.title}"></span>
+                                <span th:unless="${#strings.isEmpty(note.title)}" th:text="${note.title}"></span>
+                                <span th:if="${#strings.isEmpty(note.title)}" th:text="#{notedown.templates.list.empty-title}"></span>
                                 <span class="glyphicon glyphicon-eye-open pull-right invisible preview-icon" th:attr="data-id=${note.id}"></span>
                             </td>
                             <td th:text="${prettyTime.format(note.lastModification)}"></td>
