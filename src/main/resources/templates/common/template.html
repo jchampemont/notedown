@@ -8,6 +8,7 @@
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
         <title th:text="${title}"></title>
         <link rel="stylesheet" href="/webjars/bootstrap/3.3.4/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/webjars/highlightjs/8.4-4/styles/solarized_light.min.css"/>
         <link rel="stylesheet" href="/css/custom.css"/>
     </head>
     <body>
@@ -59,6 +60,8 @@
             <script src="/js/jquery.timeago.js"></script>
             <script src="/webjars/bootstrap/3.3.4/js/bootstrap.min.js"></script>
             <script src="/webjars/marked/0.3.2/marked.js"></script>
+            <script src="/webjars/highlightjs/8.4-4/highlight.min.js"></script>
+            <script src="/js/common.js"></script>
             <script th:inline="javascript">
             /*<![CDATA[*/
                 jQuery.timeago.settings.strings = {

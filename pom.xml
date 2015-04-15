@@ -32,6 +32,7 @@
         <jquery.version>2.1.3</jquery.version>
         <bootstrap.version>3.3.4</bootstrap.version>
         <marked.version>0.3.2-1</marked.version>
+        <highlightjs.version>8.4-4</highlightjs.version>
 	</properties>
 
 	<dependencies>
@@ -97,6 +98,11 @@
             <groupId>org.webjars</groupId>
             <artifactId>marked</artifactId>
             <version>${marked.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>highlightjs</artifactId>
+            <version>${highlightjs.version}</version>
         </dependency>
         <!-- Test dependencies -->
 		<dependency>
