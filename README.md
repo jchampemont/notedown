@@ -40,7 +40,7 @@ I am happy to accept any pull request as long as it respects the following guide
 
 - Meets some basic code quality requirements
 - Please do some basic unit testing on your code
-- Use current technology stack before introducing any new dependencie
+- Use current technology stack before introducing any new dependency
 - You accept your code to be licensed under the Apache License, Version 2.0
 - NoteDown should stay *KISS* : Keep It Simple, Stupid.
 
