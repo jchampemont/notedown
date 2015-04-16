@@ -46,6 +46,16 @@ I am happy to accept any pull request as long as it respects the following guide
 
 Feel free to add your name on the list of contributors below.
 
+In case you need to modify the data model, you should do the following :
+
+- Edit `liquibase.properties` and `application.properties` to use a real RDBMS (MySQL or PostgreSQL supported)
+- Launch the application once in order to create tables
+- Add the required modifications to entities
+- `mvn clean install liquibase:diff` will generate a liquibase diff file `db.changelog-master-diff.xml`
+- Add the generated change set to `db.changelog-master.xml` with your author's name and correct incremental id
+- Please preferably use XML syntax over pure SQL
+- Launch the application and check everything went fine with liquibase migration
+
 Contributors
 ------------
 
