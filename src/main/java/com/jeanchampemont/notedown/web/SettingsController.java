@@ -93,6 +93,12 @@ public class SettingsController {
                 model.put("wrongPassword", true);
             }
         }
+        if (success && !user.getDisplayName().equals(form.getDisplayName())) {
+            hasChanged = true;
+            user.setDisplayName(form.getDisplayName());
+            user = userService.update(user);
+            success = true;
+        }
         model.put("success", success && hasChanged);
         model.put("tab", "user");
         return user(model);

@@ -71,4 +71,13 @@
     <changeSet author="jchampemont" id="8">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note" constraintName="FK_NOTE_USER_ACCOUNT" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_account"/>
     </changeSet>
+
+    <changeSet author="jchampemont" id="9">
+        <addColumn tableName="user_account">
+            <column name="display_name" type="varchar(64)"/>
+        </addColumn>
+        <sql>
+            update user_account set display_name = email
+        </sql>
+    </changeSet>
 </databaseChangeLog>

@@ -70,6 +70,7 @@ public class UserService {
     public User create(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setEmail(user.getEmail().toLowerCase());
+        user.setDisplayName(user.getEmail().toLowerCase());
         user = repo.save(user);
         return user;
     }
@@ -99,6 +100,7 @@ public class UserService {
         User currentUser = authenticationService.getCurrentUser();
         if (hasWriteAccess(currentUser, originalUser)) {
             originalUser.setLocale(user.getLocale());
+            originalUser.setDisplayName(user.getDisplayName());
             return repo.save(originalUser);
         }
         throw new OperationNotAllowedException();

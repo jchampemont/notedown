@@ -24,6 +24,8 @@ public class SettingsUserForm {
 
     private String newPassword;
 
+    private String displayName;
+
     public String getEmail() {
         return email;
     }
@@ -46,5 +48,13 @@ public class SettingsUserForm {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

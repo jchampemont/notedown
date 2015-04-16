@@ -42,6 +42,9 @@ public class User {
     @Column(name = "locale", length = 2)
     private String locale;
 
+    @Column(name = "display_name", length = 64)
+    private String displayName;
+
     public long getId() {
         return id;
     }
@@ -80,5 +83,13 @@ public class User {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }
