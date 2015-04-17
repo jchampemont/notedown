@@ -23,6 +23,6 @@ Run :
 --------------
 To run the application, just launch the following command :
 
-    java -jar notedown-0.1.0-RC.jar
+    java -jar notedown-X.Y.Z-RC.jar
     
 The application should be running within seconds, and listening on http port 8080.
