@@ -65,7 +65,8 @@ $(function() {
             var note = {
                 id: $("#id").val(),
                 title: $("#title").val(),
-                content: $("#editor").val()
+                content: $("#editor").val(),
+                version: $("#version").val()
             };
             var headers = {};
             headers[$("meta[name='_csrf_header']").attr("content")] = $("meta[name='_csrf']").attr("content");
@@ -76,6 +77,7 @@ $(function() {
                 headers: headers,
                 success: function(data) {
                     $("#id").val(data.id);
+                    $("#version").val(data.version);
                     saveInProgress = false;
                     $("#saved-label #timeago").remove();
                     $("#saved-label").append("<span id=\"timeago\" title=\"" + new Date().toISOString() + "\"></span>");

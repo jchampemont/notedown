@@ -61,12 +61,6 @@ public class NoteController {
         return "edit";
     }
 
-    @RequestMapping(value = "/note", method = RequestMethod.POST)
-    public String save(Note note, ModelMap model) {
-        noteService.createUpdate(note);
-        return "redirect:/app";
-    }
-
     @RequestMapping(value = "/note/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable("id") UUID id, ModelMap model) {
         noteService.delete(id);

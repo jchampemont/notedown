@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
 
     <changeSet author="jchampemont" id="1">
         <createTable tableName="persistent_logins">
@@ -80,4 +82,41 @@
             update user_account set display_name = email
         </sql>
     </changeSet>
+
+    <changeSet author="jchampemont" id="10">
+        <createTable tableName="note_event">
+            <column name="note_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content_diff" type="CLOB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="11">
+        <addPrimaryKey columnNames="note_id, version" constraintName="note_eventPK" tableName="note_event"/>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="12">
+        <addForeignKeyConstraint baseColumnNames="note_id" baseTableName="note_event" constraintName="FK_NOTE_EVENT_NOTE" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="note"/>
+    </changeSet>
+
+    <changeSet author="jchampemont" id="13">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note_event" constraintName="FK_NOTE_EVENT_USER" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_account"/>
+    </changeSet>
+
 </databaseChangeLog>

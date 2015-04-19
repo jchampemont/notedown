@@ -22,6 +22,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -46,6 +47,10 @@ public class Note {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE)
+    @OrderBy("version DESC")
+    private List<NoteEvent> events;
 
     public Note() {
         id = UUID.randomUUID();
@@ -96,5 +101,22 @@ public class Note {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<NoteEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<NoteEvent> events) {
+        this.events = events;
+    }
+
+    @Transient
+    public Long getLastVersion() {
+        if(events == null || events.size() == 0) {
+            return 0L;
+        } else {
+            return events.get(0).getId().getVersion();
+        }
     }
 }

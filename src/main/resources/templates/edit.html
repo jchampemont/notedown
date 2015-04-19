@@ -5,6 +5,7 @@
         <div th:replace="common/template :: header (page='app')"></div>
         <form method="post" th:action="@{/app/note}">
             <input type="hidden" id="id" name="id" th:value="${note.id}" />
+            <input type="hidden" id="version" name="version" th:value="${note.lastVersion}" />
             <div class="editor-container-title col-sm-12">
                 <input type="text" id="title" name="title" class="form-control" th:value="${note.title}" th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
             </div>

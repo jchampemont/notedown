@@ -21,6 +21,7 @@ public class NoteDto {
     private String id;
     private String title;
     private String content;
+    private Long version;
 
     public String getId() {
         return id;
@@ -44,5 +45,13 @@ public class NoteDto {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

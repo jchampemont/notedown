@@ -18,18 +18,27 @@
 package com.jeanchampemont.notedown.note;
 
 import com.jeanchampemont.notedown.note.persistence.Note;
+import com.jeanchampemont.notedown.note.persistence.NoteEvent;
+import com.jeanchampemont.notedown.note.persistence.NoteEventId;
+import com.jeanchampemont.notedown.note.persistence.NoteEventType;
+import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
+import difflib.DiffUtils;
+import difflib.Patch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,13 +46,16 @@ public class NoteService {
 
     private NoteRepository repo;
 
+    private NoteEventRepository eventRepo;
+
     private UserService userService;
 
     private AuthenticationService authenticationService;
 
     @Autowired
-    public NoteService(NoteRepository repo, UserService userService, AuthenticationService authenticationService) {
+    public NoteService(NoteRepository repo, NoteEventRepository eventRepo, UserService userService, AuthenticationService authenticationService) {
         this.repo = repo;
+        this.eventRepo = eventRepo;
         this.userService = userService;
         this.authenticationService = authenticationService;
     }
@@ -82,20 +94,33 @@ public class NoteService {
      * @param note
      * @return
      */
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = "note", key = "#note.id")
-    public Note createUpdate(Note note) {
+    public Note createUpdate(Note note, Long version) {
         User user = authenticationService.getCurrentUser();
         Note originalNote = repo.findOne(note.getId());
         if (originalNote == null) {
             originalNote = note;
         }
         if (hasWriteAccess(user, originalNote)) {
+            NoteEvent event = new NoteEvent();
+            event.setId(new NoteEventId(note.getId(), version + 1));
+            event.setUser(user);
+            event.setDate(new Date());
+            event.setType(NoteEventType.SAVE);
+            event.setTitle(note.getTitle());
+            event.setContentDiff(generateDiff(originalNote.getContent(), note.getContent()));
+
             originalNote = updateLastModification(originalNote);
             originalNote.setTitle(note.getTitle());
             originalNote.setContent(note.getContent());
             originalNote.setUser(user);
-            return repo.save(originalNote);
+            originalNote = repo.save(originalNote);
+
+            event.setNote(originalNote);
+            event = eventRepo.save(event);
+
+            return originalNote;
         } else {
             throw new OperationNotAllowedException();
         }
@@ -130,5 +155,17 @@ public class NoteService {
 
     private boolean hasWriteAccess(User user, Note note) {
         return note.getUser() == null || note.getUser().getId() == user.getId();
+    }
+
+    private String generateDiff(String original, String revised) {
+        List<String> originalLinesList = Arrays.asList(original.split("\n"));
+        List<String> revisedLinesList = Arrays.asList(revised.split("\n"));
+
+        Patch<String> patch = DiffUtils.diff(originalLinesList, revisedLinesList);
+
+        List<String> diff = DiffUtils
+                .generateUnifiedDiff("original", "revised", originalLinesList, patch, 0);
+
+        return String.join("\n", diff);
     }
 }

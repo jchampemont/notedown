@@ -19,6 +19,8 @@ package com.jeanchampemont.notedown.note;
 
 import com.jeanchampemont.notedown.NoteDownApplication;
 import com.jeanchampemont.notedown.note.persistence.Note;
+import com.jeanchampemont.notedown.note.persistence.NoteEvent;
+import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.UserService;
@@ -27,6 +29,7 @@ import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -44,6 +47,8 @@ public class NoteServiceTest {
 
     private NoteRepository repoMock;
 
+    private NoteEventRepository eventRepoMock;
+
     private UserService userServiceMock;
 
     private AuthenticationService authenticationServiceMock;
@@ -53,7 +58,8 @@ public class NoteServiceTest {
         repoMock = mock(NoteRepository.class);
         userServiceMock = mock(UserService.class);
         authenticationServiceMock = mock(AuthenticationService.class);
-        sut = new NoteService(repoMock, userServiceMock, authenticationServiceMock);
+        eventRepoMock = mock(NoteEventRepository.class);
+        sut = new NoteService(repoMock, eventRepoMock, userServiceMock, authenticationServiceMock);
     }
 
     @Test
@@ -125,12 +131,17 @@ public class NoteServiceTest {
         when(repoMock.findOne(note.getId())).thenReturn(null);
         when(repoMock.save(note)).thenReturn(note);
 
-        Note result = sut.createUpdate(note);
+        Note result = sut.createUpdate(note, 0L);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());
         verify(repoMock).save(note);
+        ArgumentCaptor<NoteEvent> argument = ArgumentCaptor.forClass(NoteEvent.class);
+        verify(eventRepoMock).save(argument.capture());
 
+        assertEquals(new Long(1L), argument.getValue().getId().getVersion());
+        assertEquals(user, argument.getValue().getUser());
+        assertEquals(note, argument.getValue().getNote());
         assertEquals(result, note);
     }
 
@@ -140,6 +151,7 @@ public class NoteServiceTest {
         user.setId(12);
 
         Note existingNote = new Note();
+        existingNote.setContent("old content");
 
         Note note = new Note();
         note.setId(existingNote.getId());
@@ -150,13 +162,19 @@ public class NoteServiceTest {
         when(repoMock.findOne(note.getId())).thenReturn(existingNote);
         when(repoMock.save(existingNote)).thenReturn(existingNote);
 
-        Note result = sut.createUpdate(note);
+        Note result = sut.createUpdate(note, 41L);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());
         verify(repoMock).save(existingNote);
+        ArgumentCaptor<NoteEvent> argument = ArgumentCaptor.forClass(NoteEvent.class);
+        verify(eventRepoMock).save(argument.capture());
 
+        assertEquals(new Long(42L), argument.getValue().getId().getVersion());
+        assertEquals(user, argument.getValue().getUser());
+        assertEquals(existingNote, argument.getValue().getNote());
         assertEquals(result, existingNote);
+        assertEquals("--- original\n+++ revised\n@@ -1,1 +1,1 @@\n-old content\n+content", argument.getValue().getContentDiff());
     }
 
     @Test(expected = OperationNotAllowedException.class)
@@ -178,7 +196,7 @@ public class NoteServiceTest {
         when(authenticationServiceMock.getCurrentUser()).thenReturn(notAllowedUser);
         when(repoMock.findOne(note.getId())).thenReturn(existingNote);
 
-        sut.createUpdate(note);
+        sut.createUpdate(note, 0L);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());

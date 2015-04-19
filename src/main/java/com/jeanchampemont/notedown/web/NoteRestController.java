@@ -58,7 +58,7 @@ public class NoteRestController {
     public NoteDto save(NoteDto note) {
         Note n = new Note(note.getTitle(), note.getContent(), authenticationService.getCurrentUser());
         n.setId(UUID.fromString(note.getId()));
-        n = noteService.createUpdate(n);
+        n = noteService.createUpdate(n, note.getVersion());
         NoteDto result = mapNoteToNoteDto(n);
         return result;
     }
@@ -68,6 +68,7 @@ public class NoteRestController {
         result.setId(n.getId().toString());
         result.setTitle(n.getTitle());
         result.setContent(n.getContent());
+        result.setVersion(n.getLastVersion());
         return result;
     }
 }
