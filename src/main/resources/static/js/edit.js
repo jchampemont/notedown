@@ -84,6 +84,14 @@ $(function() {
                     $("#timeago").timeago();
                     $("#saved-label").removeClass("hide");
                     $("#saving-label").addClass("hide");
+                    $("#error-saving-label").addClass("hide");
+                    shouldAutoSave = true;
+                },
+                error: function() {
+                    $("#saving-label").addClass("hide");
+                    $("#error-saving-label").removeClass("hide");
+                    shouldAutoSave = false;
+                    saveInProgress = false;
                 }
             });
         }
@@ -91,13 +99,16 @@ $(function() {
 
     var lastAutoSave = undefined;
     var saveNeeded = false;
+    var shouldAutoSave = true;
     var autoSave = function() {
         saveNeeded = true;
-        clearTimeout(lastAutoSave);
-        lastAutoSave = setTimeout(function() {
-            save();
-            saveNeeded = false;
-        }, 2000);
+        if(shouldAutoSave) {
+            clearTimeout(lastAutoSave);
+            lastAutoSave = setTimeout(function() {
+                save();
+                saveNeeded = false;
+            }, 2000);
+        }
     };
 
     $(window).resize(handleResize);
