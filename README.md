@@ -56,6 +56,11 @@ In case you need to modify the data model, you should do the following :
 - Please preferably use XML syntax over pure SQL
 - Launch the application and check everything went fine with liquibase migration
 
+Thanks
+------
+Jetbrains is providing free Intellij IDEA licenses for Notedown contributors. Big thanks to their team! If you
+don't know Intellij IDEA, you should definitely give it a try! 
+
 Contributors
 ------------
 
