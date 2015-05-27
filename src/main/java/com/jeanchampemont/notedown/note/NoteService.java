@@ -99,26 +99,33 @@ public class NoteService {
     public Note createUpdate(Note note, Long version) {
         User user = authenticationService.getCurrentUser();
         Note originalNote = repo.findOne(note.getId());
+        String originalContent;
         if (originalNote == null) {
             originalNote = note;
+            originalContent = "";
+        } else {
+            originalContent = originalNote.getContent();
         }
         if (hasWriteAccess(user, originalNote)) {
-            NoteEvent event = new NoteEvent();
-            event.setId(new NoteEventId(note.getId(), version + 1));
-            event.setUser(user);
-            event.setDate(new Date());
-            event.setType(NoteEventType.SAVE);
-            event.setTitle(note.getTitle());
-            event.setContentDiff(generateDiff(originalNote.getContent(), note.getContent()));
-
             originalNote = updateLastModification(originalNote);
             originalNote.setTitle(note.getTitle());
             originalNote.setContent(note.getContent());
             originalNote.setUser(user);
             originalNote = repo.save(originalNote);
 
+            NoteEvent event = NoteEventHelper.builder()
+                    .noteId(originalNote.getId())
+                    .version(version + 1)
+                    .user(user)
+                    .title(note.getTitle())
+                    .diff(originalContent, note.getContent())
+                    .save()
+                    .build();
+
             event.setNote(originalNote);
             event = eventRepo.save(event);
+
+            originalNote.getEvents().add(event);
 
             return originalNote;
         } else {

@@ -21,6 +21,7 @@ import com.jeanchampemont.notedown.user.persistence.User;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class Note {
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE)
     @OrderBy("version DESC")
-    private List<NoteEvent> events;
+    private List<NoteEvent> events = new ArrayList<>();
 
     public Note() {
         id = UUID.randomUUID();
