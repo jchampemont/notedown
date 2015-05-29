@@ -18,5 +18,6 @@
 package com.jeanchampemont.notedown.note.persistence;
 
 public enum NoteEventType {
-    SAVE;
+    SAVE,
+    HISTORY_COMPRESS;
 }

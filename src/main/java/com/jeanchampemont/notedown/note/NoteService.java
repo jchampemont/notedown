@@ -17,47 +17,53 @@
  */
 package com.jeanchampemont.notedown.note;
 
-import com.jeanchampemont.notedown.note.persistence.Note;
-import com.jeanchampemont.notedown.note.persistence.NoteEvent;
-import com.jeanchampemont.notedown.note.persistence.NoteEventId;
-import com.jeanchampemont.notedown.note.persistence.NoteEventType;
-import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
-import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
-import com.jeanchampemont.notedown.security.AuthenticationService;
-import com.jeanchampemont.notedown.user.UserService;
-import com.jeanchampemont.notedown.user.persistence.User;
-import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
-import difflib.DiffUtils;
-import difflib.Patch;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
+
+import com.jeanchampemont.notedown.note.persistence.Note;
+import com.jeanchampemont.notedown.note.persistence.NoteEvent;
+import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
+import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
+import com.jeanchampemont.notedown.security.AuthenticationService;
+import com.jeanchampemont.notedown.user.persistence.User;
+import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
+
+import difflib.PatchFailedException;
+
 @Service
 public class NoteService {
+	
+	private Log log = LogFactory.getLog(NoteService.class);
 
     private NoteRepository repo;
 
     private NoteEventRepository eventRepo;
 
-    private UserService userService;
-
     private AuthenticationService authenticationService;
+    
+    private int maxHistorySize;
 
     @Autowired
-    public NoteService(NoteRepository repo, NoteEventRepository eventRepo, UserService userService, AuthenticationService authenticationService) {
+    public NoteService(NoteRepository repo, NoteEventRepository eventRepo
+    		, AuthenticationService authenticationService
+    		, @Value("${notedown.max-history-size}") int maxHistorySize) {
         this.repo = repo;
         this.eventRepo = eventRepo;
-        this.userService = userService;
         this.authenticationService = authenticationService;
+        this.maxHistorySize = maxHistorySize;
     }
 
     /**
@@ -150,6 +156,55 @@ public class NoteService {
             }
         }
     }
+    
+    @Transactional
+    @Scheduled(fixedDelay = 2*1000*60*60, initialDelay = 2*1000*60*60)
+    public void compressHistory() {
+    	log.info("Starting note compression...");
+    	StopWatch stopWatch = new StopWatch("compressHistory");
+    	stopWatch.start();
+    	Iterable<Note> notes = repo.findAll();
+    	for(Note note : notes) {
+    		if(note.getEvents().size() > maxHistorySize) {
+    			log.debug("compressing note " + note.getId());
+    			List<NoteEvent> keptEvents = note.getEvents().subList(0, maxHistorySize - 1);
+
+                Note copy = new Note();
+                copy.setContent(note.getContent());
+                copy.setId(note.getId());
+                copy.setTitle(note.getTitle());
+
+    			try {
+					copy = NoteEventHelper.unPatch(keptEvents, copy);
+				} catch (PatchFailedException e) {
+					log.error("Unpatching NoteEvent should not fail here...");
+				}
+    			String content = copy.getContent();
+
+    			List<NoteEvent> oldEvents = note.getEvents().subList(maxHistorySize - 1, note.getEvents().size());
+    			try {
+					copy = NoteEventHelper.unPatch(oldEvents, copy);
+				} catch (PatchFailedException e) {
+					log.error("Unpatching NoteEvent should not fail here...");
+				}
+    			NoteEvent compressedEvent = NoteEventHelper.builder()
+						    					.noteId(note.getId())
+						                		.version(oldEvents.get(0).getId().getVersion())
+						                		.user(note.getUser())
+						                		.title(oldEvents.get(0).getTitle())
+						                		.diff(copy.getContent(), content)
+						                		.compress()
+						                		.build();
+    			eventRepo.delete(oldEvents);
+    			
+    			keptEvents.add(compressedEvent);
+    			eventRepo.save(compressedEvent);
+    		}
+    	}
+    	stopWatch.stop();
+    	log.info("Finished note compression");
+    	log.info(stopWatch.shortSummary());
+    }
 
     private Note updateLastModification(Note note) {
         note.setLastModification(new Date());
@@ -162,17 +217,5 @@ public class NoteService {
 
     private boolean hasWriteAccess(User user, Note note) {
         return note.getUser() == null || note.getUser().getId() == user.getId();
-    }
-
-    private String generateDiff(String original, String revised) {
-        List<String> originalLinesList = Arrays.asList(original.split("\n"));
-        List<String> revisedLinesList = Arrays.asList(revised.split("\n"));
-
-        Patch<String> patch = DiffUtils.diff(originalLinesList, revisedLinesList);
-
-        List<String> diff = DiffUtils
-                .generateUnifiedDiff("original", "revised", originalLinesList, patch, 0);
-
-        return String.join("\n", diff);
     }
 }

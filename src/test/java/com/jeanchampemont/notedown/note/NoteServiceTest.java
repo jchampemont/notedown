@@ -23,7 +23,6 @@ import com.jeanchampemont.notedown.note.persistence.NoteEvent;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
-import com.jeanchampemont.notedown.user.UserService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
 import org.junit.Before;
@@ -49,17 +48,14 @@ public class NoteServiceTest {
 
     private NoteEventRepository eventRepoMock;
 
-    private UserService userServiceMock;
-
     private AuthenticationService authenticationServiceMock;
 
     @Before
     public void init() {
         repoMock = mock(NoteRepository.class);
-        userServiceMock = mock(UserService.class);
         authenticationServiceMock = mock(AuthenticationService.class);
         eventRepoMock = mock(NoteEventRepository.class);
-        sut = new NoteService(repoMock, eventRepoMock, userServiceMock, authenticationServiceMock);
+        sut = new NoteService(repoMock, eventRepoMock, authenticationServiceMock, 10);
     }
 
     @Test
@@ -126,6 +122,7 @@ public class NoteServiceTest {
         user.setId(12);
 
         Note note = new Note();
+        note.setContent("");
 
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findOne(note.getId())).thenReturn(null);
@@ -218,5 +215,4 @@ public class NoteServiceTest {
         verify(repoMock).findOne(note.getId());
         verify(repoMock).delete(note.getId());
     }
-
 }
