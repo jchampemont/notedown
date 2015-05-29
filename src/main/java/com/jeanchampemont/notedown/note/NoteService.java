@@ -135,7 +135,7 @@ public class NoteService {
                 event.setNote(originalNote);
                 event = eventRepo.save(event);
 
-                originalNote.getEvents().add(event);
+                originalNote.getEvents().add(0, event);
             }
             return originalNote;
         } else {
