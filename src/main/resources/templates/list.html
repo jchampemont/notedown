@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="common/template :: head (title=#{notedown.templates.list.title})"></head>
-    <body>
-        <div th:replace="common/template :: header (page='app')"></div>
-        <div class="modal fade" tabindex="-1" id="preview-modal">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                        <h4 class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body"></div>
-                </div>
+<head th:replace="common/template :: head (title=#{notedown.templates.list.title})"></head>
+<body>
+<div th:replace="common/template :: header (page='app')"></div>
+<div class="modal fade" tabindex="-1" id="preview-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title"></h4>
             </div>
+            <div class="modal-body"></div>
         </div>
-        <div class="container">
-            <ol class="breadcrumb">
-                <li class="active"><span th:text="#{notedown.templates.list.notes}"></span></li>
-            </ol>
-            <div class="table-responsive">
-                <table class="table table-hover" id="note-list">
-                    <thead>
-                        <td th:text="#{notedown.templates.list.label-title}"></td>
-                        <td th:text="#{notedown.templates.list.label-modified}"></td>
-                        <td></td>
-                    </thead>
-                    <tbody>
-                        <tr th:each="note : ${notes}">
-                            <td>
-                                <span th:unless="${#strings.isEmpty(note.title)}" th:text="${note.title}"></span>
-                                <span th:if="${#strings.isEmpty(note.title)}" th:text="#{notedown.templates.list.empty-title}"></span>
-                                <span class="glyphicon glyphicon-eye-open pull-right invisible preview-icon" th:attr="data-id=${note.id}"></span>
-                            </td>
-                            <td th:text="${prettyTime.format(note.lastModification)}"></td>
-                            <td>
+    </div>
+</div>
+<div class="container">
+    <ol class="breadcrumb">
+        <li class="active"><span th:text="#{notedown.templates.list.notes}"></span></li>
+    </ol>
+    <div class="table-responsive">
+        <table class="table table-hover" id="note-list">
+            <thead>
+            <td th:text="#{notedown.templates.list.label-title}"></td>
+            <td th:text="#{notedown.templates.list.label-modified}"></td>
+            <td></td>
+            </thead>
+            <tbody>
+            <tr th:each="note : ${notes}">
+                <td>
+                    <span th:unless="${#strings.isEmpty(note.title)}" th:text="${note.title}"></span>
+                    <span th:if="${#strings.isEmpty(note.title)}"
+                          th:text="#{notedown.templates.list.empty-title}"></span>
+                    <span class="glyphicon glyphicon-eye-open pull-right invisible preview-icon"
+                          th:attr="data-id=${note.id}"></span>
+                </td>
+                <td th:text="${prettyTime.format(note.lastModification)}"></td>
+                <td>
                                 <span class="pull-right">
                                     <a th:href="${'/app/note/' + note.id}" class="btn btn-primary btn-xs">
                                         <span class="glyphicon glyphicon-edit"></span>
-                                        <span class="hidden-xs" >
+                                        <span class="hidden-xs">
                                             &nbsp;
                                             <span th:text="#{notedown.templates.list.note-edit}"></span>
                                         </span>
@@ -45,28 +47,30 @@
                                     &nbsp;
                                     <a th:href="${'/app/note/delete/' + note.id}" class="btn btn-danger btn-xs">
                                         <span class="glyphicon glyphicon-remove"></span>
-                                        <span class="hidden-xs" >
+                                        <span class="hidden-xs">
                                             &nbsp;
-                                            <span class="hidden-xs" th:text="#{notedown.templates.list.note-delete}"></span>
+                                            <span class="hidden-xs"
+                                                  th:text="#{notedown.templates.list.note-delete}"></span>
                                         </span>
                                     </a>
                                 </span>
-                            </td>
-                        </tr>
-                        <tr th:if="${notes.size() == 0}">
-                            <td colspan="3">
-                                <h3 th:text="#{notedown.templates.list.empty-notes}"></h3>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <hr />
-            <p>
-                <a class="btn btn-primary btn-lg" href="/app/note/new" th:text="#{notedown.templates.list.note-new}"></a>
-            </p>
-            <div th:replace="common/template :: footer"></div>
-            <script src="/js/list.js"></script>
-        </div>
-    </body>
+                </td>
+            </tr>
+            <tr th:if="${notes.size() == 0}">
+                <td colspan="3">
+                    <h3 th:text="#{notedown.templates.list.empty-notes}"></h3>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr/>
+    <p>
+        <a class="btn btn-primary btn-lg" href="/app/note/new" th:text="#{notedown.templates.list.note-new}"></a>
+    </p>
+
+    <div th:replace="common/template :: footer"></div>
+    <script src="/js/list.js"></script>
+</div>
+</body>
 </html>

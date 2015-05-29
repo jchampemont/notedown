@@ -4,22 +4,32 @@
 <body>
 <div th:replace="common/template :: header (page='preferences')"></div>
 <div class="container">
-    <h2 th:text="#{notedown.templates.settings.settings}"></h2><br />
+    <h2 th:text="#{notedown.templates.settings.settings}"></h2><br/>
+
     <div class="alert alert-success" th:if="${success}" th:text="#{notedown.templates.settings.success}"></div>
-    <div class="alert alert-danger" th:if="${wrongPassword}" th:text="#{notedown.templates.settings.wrong-password}"></div>
+    <div class="alert alert-danger" th:if="${wrongPassword}"
+         th:text="#{notedown.templates.settings.wrong-password}"></div>
     <div class="alert alert-danger" th:if="${emailExists}" th:text="#{notedown.templates.settings.email-exists}"></div>
     <ul class="nav nav-tabs">
-        <li th:class="${tab == 'user'}? active"><a href="/app/settings/user" th:text="#{notedown.templates.settings.user}"></a></li>
-        <li th:class="${tab == 'lang'}? active"><a href="/app/settings/lang" th:text="#{notedown.templates.settings.lang}"></a></li>
-    </ul><br />
+        <li th:class="${tab == 'user'}? active"><a href="/app/settings/user"
+                                                   th:text="#{notedown.templates.settings.user}"></a></li>
+        <li th:class="${tab == 'lang'}? active"><a href="/app/settings/lang"
+                                                   th:text="#{notedown.templates.settings.lang}"></a></li>
+    </ul>
+    <br/>
+
     <div th:if="${tab == 'lang'}">
         <form method="post" class="form-horizontal" th:action="@{/app/settings/lang}">
             <div class="form-group form-group-sm">
-                <label for="locale" class="col-sm-2 control-label" th:text="#{notedown.templates.settings.language-label}"></label>
+                <label for="locale" class="col-sm-2 control-label"
+                       th:text="#{notedown.templates.settings.language-label}"></label>
+
                 <div class="col-sm-2">
                     <select name="locale" id="locale" class="form-control">
-                        <option value="" th:attr="selected=${selectedLanguage == ''}? 'selected'" th:text="#{notedown.templates.settings.language-default}"></option>
-                        <option th:each="language : ${availableLanguages}" th:value="${language}" th:text="${language}" th:attr="selected=${selectedLanguage == language}? 'selected'"></option>
+                        <option value="" th:attr="selected=${selectedLanguage == ''}? 'selected'"
+                                th:text="#{notedown.templates.settings.language-default}"></option>
+                        <option th:each="language : ${availableLanguages}" th:value="${language}" th:text="${language}"
+                                th:attr="selected=${selectedLanguage == language}? 'selected'"></option>
                     </select>
                 </div>
             </div>
@@ -33,24 +43,32 @@
     <div th:if="${tab == 'user'}">
         <form method="post" class="form-horizontal" th:action="@{/app/settings/user}">
             <div class="form-group form-group-sm">
-                <label for="email" class="col-sm-2 control-label" th:text="#{notedown.templates.settings.email-label}"></label>
+                <label for="email" class="col-sm-2 control-label"
+                       th:text="#{notedown.templates.settings.email-label}"></label>
+
                 <div class="col-sm-10">
                     <div class="col-sm-3">
-                        <input type="text" name="email" id="email" class="form-control" required="required" th:value="${user.email}"/>
+                        <input type="text" name="email" id="email" class="form-control" required="required"
+                               th:value="${user.email}"/>
                     </div>
                     <span class="help-block" th:text="#{notedown.templates.settings.email-change}"></span>
                 </div>
             </div>
             <div class="form-group form-group-sm">
-                <label for="displayName" class="col-sm-2 control-label" th:text="#{notedown.templates.settings.display-name-label}"></label>
+                <label for="displayName" class="col-sm-2 control-label"
+                       th:text="#{notedown.templates.settings.display-name-label}"></label>
+
                 <div class="col-sm-10">
                     <div class="col-sm-3">
-                        <input type="text" name="displayName" id="displayName" class="form-control" required="required" th:value="${user.displayName}"/>
+                        <input type="text" name="displayName" id="displayName" class="form-control" required="required"
+                               th:value="${user.displayName}"/>
                     </div>
                 </div>
             </div>
             <div class="form-group form-group-sm">
-                <label for="oldPassword" class="col-sm-2 control-label" th:text="#{notedown.templates.settings.old-password-label}"></label>
+                <label for="oldPassword" class="col-sm-2 control-label"
+                       th:text="#{notedown.templates.settings.old-password-label}"></label>
+
                 <div class="col-sm-10">
                     <div class="col-sm-3">
                         <input type="password" name="oldPassword" id="oldPassword" class="form-control"/>
@@ -59,10 +77,13 @@
                 </div>
             </div>
             <div class="form-group form-group-sm">
-                <label for="newPassword" class="col-sm-2 control-label" th:text="#{notedown.templates.settings.new-password-label}"></label>
+                <label for="newPassword" class="col-sm-2 control-label"
+                       th:text="#{notedown.templates.settings.new-password-label}"></label>
+
                 <div class="col-sm-10">
                     <div class="col-sm-3">
-                        <input type="password" name="newPassword" id="newPassword" class="form-control" pattern=".{6,}"/>
+                        <input type="password" name="newPassword" id="newPassword" class="form-control"
+                               pattern=".{6,}"/>
                     </div>
                     <span class="help-block" th:text="#{notedown.templates.settings.new-password-format}"></span>
                 </div>
@@ -70,7 +91,8 @@
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <div class="col-sm-3">
-                        <input type="submit" th:value="#{notedown.templates.settings.save-action}" class="btn btn-primary"/>
+                        <input type="submit" th:value="#{notedown.templates.settings.save-action}"
+                               class="btn btn-primary"/>
                     </div>
                 </div>
             </div>

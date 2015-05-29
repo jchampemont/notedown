@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="common/template :: head (title=#{notedown.templates.home.title})"></head>
-    <body>
-        <div th:replace="common/template :: header (page='home')"></div>
-        <div class="container">
-            <div class="jumbotron">
-                <h1 th:text="#{notedown.brand}"></h1>
-                <p class="lead" th:text="#{notedown.templates.home.lead}"></p>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <h2 th:text="#{notedown.templates.home.heading1.title}"></h2>
-                    <p th:text="#{notedown.templates.home.heading1.desc}"></p>
-                </div>
-                <div class="col-md-4">
-                    <h2 th:text="#{notedown.templates.home.heading2.title}"></h2>
-                    <p th:text="#{notedown.templates.home.heading2.desc}"></p>
-                </div>
-                <div class="col-md-4">
-                    <h2 th:text="#{notedown.templates.home.heading3.title}"></h2>
-                    <p th:text="#{notedown.templates.home.heading3.desc}"></p>
-                </div>
-            </div>
-            <div th:replace="common/template :: footer(displayText=true)"></div>
+<head th:replace="common/template :: head (title=#{notedown.templates.home.title})"></head>
+<body>
+<div th:replace="common/template :: header (page='home')"></div>
+<div class="container">
+    <div class="jumbotron">
+        <h1 th:text="#{notedown.brand}"></h1>
+
+        <p class="lead" th:text="#{notedown.templates.home.lead}"></p>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h2 th:text="#{notedown.templates.home.heading1.title}"></h2>
+
+            <p th:text="#{notedown.templates.home.heading1.desc}"></p>
         </div>
-    </body>
+        <div class="col-md-4">
+            <h2 th:text="#{notedown.templates.home.heading2.title}"></h2>
+
+            <p th:text="#{notedown.templates.home.heading2.desc}"></p>
+        </div>
+        <div class="col-md-4">
+            <h2 th:text="#{notedown.templates.home.heading3.title}"></h2>
+
+            <p th:text="#{notedown.templates.home.heading3.desc}"></p>
+        </div>
+    </div>
+    <div th:replace="common/template :: footer(displayText=true)"></div>
+</div>
+</body>
 </html>

@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="common/template :: head (title=${note.title}? #{notedown.templates.edit.title(${note.title})} : #{notedown.templates.edit.title-new})"></head>
-    <body>
-        <div th:replace="common/template :: header (page='app')"></div>
-        <form method="post" th:action="@{/app/note}">
-            <input type="hidden" id="id" name="id" th:value="${note.id}" />
-            <input type="hidden" id="version" name="version" th:value="${note.lastVersion}" />
-            <div class="editor-container-title col-sm-12">
-                <input type="text" id="title" name="title" class="form-control" th:value="${note.title}" th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
-            </div>
-            <div class="editor-container col-sm-6">
-                <textarea class="form-control" id="editor" th:text="${note.content}" name="content" ></textarea>
-            </div>
-            <div class="editor-container col-sm-6 hidden-xs">
-                <div class="editor-preview" id="preview"></div>
-            </div>
-            <div class="editor-toolbar col-xs-12">
-                <label class="hidden-xs">
-                    <input type="checkbox" id="toggle-preview-pane" checked="checked" /> <span th:text="#{notedown.templates.edit.toggle-preview}"></span>
-                </label>
-                <span id="saving-label" class="pull-right hide" th:text="#{notedown.templates.edit.save-loading}"></span>
+<head th:replace="common/template :: head (title=${note.title}? #{notedown.templates.edit.title(${note.title})} : #{notedown.templates.edit.title-new})"></head>
+<body>
+<div th:replace="common/template :: header (page='app')"></div>
+<form method="post" th:action="@{/app/note}">
+    <input type="hidden" id="id" name="id" th:value="${note.id}"/>
+    <input type="hidden" id="version" name="version" th:value="${note.lastVersion}"/>
+
+    <div class="editor-container-title col-sm-12">
+        <input type="text" id="title" name="title" class="form-control" th:value="${note.title}"
+               th:placeholder="#{notedown.templates.edit.note-title}" maxlength="64" required="required"/>
+    </div>
+    <div class="editor-container col-sm-6">
+        <textarea class="form-control" id="editor" th:text="${note.content}" name="content"></textarea>
+    </div>
+    <div class="editor-container col-sm-6 hidden-xs">
+        <div class="editor-preview" id="preview"></div>
+    </div>
+    <div class="editor-toolbar col-xs-12">
+        <label class="hidden-xs">
+            <input type="checkbox" id="toggle-preview-pane" checked="checked"/> <span
+                th:text="#{notedown.templates.edit.toggle-preview}"></span>
+        </label>
+        <span id="saving-label" class="pull-right hide" th:text="#{notedown.templates.edit.save-loading}"></span>
                 <span id="saved-label" class="pull-right hide">
                     <span th:text="#{notedown.templates.edit.saved} + ' '"></span>
                     <span id="timeago" th:title="${note.lastModification}"></span>
                 </span>
-                <span id="error-saving-label" class="pull-right hide" th:text="#{notedown.templates.edit.error-saving}"></span>
-            </div>
-        </form>
-        <div th:replace="common/template :: footer"></div>
-        <script src="/js/edit.js"></script>
-    </body>
+        <span id="error-saving-label" class="pull-right hide" th:text="#{notedown.templates.edit.error-saving}"></span>
+    </div>
+</form>
+<div th:replace="common/template :: footer"></div>
+<script src="/js/edit.js"></script>
+</body>
 </html>

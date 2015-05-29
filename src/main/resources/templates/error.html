@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="common/template :: head (title=#{notedown.templates.error.title})"></head>
-    <body>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <a th:href="${'/'}" class="navbar-brand" th:text="#{notedown.brand}"></a>
-                    <button data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                </div>
-                <div class="navbar-collapse collapse" id="navbar">
-                    <ul class="nav navbar-nav">
-                        <li>
-                            <a href="/" th:text="#{notedown.templates.common.template.header.home}"></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+<head th:replace="common/template :: head (title=#{notedown.templates.error.title})"></head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a th:href="${'/'}" class="navbar-brand" th:text="#{notedown.brand}"></a>
+            <button data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
         </div>
-        <div class="container">
-            <div class="jumbotron error">
-                <h1 th:text="#{notedown.templates.error.error}"></h1>
-                <p class="lead" th:text="#{notedown.templates.error.msg}"></p>
-            </div>
-            <div th:replace="common/template :: footer(displayText=true)"></div>
+        <div class="navbar-collapse collapse" id="navbar">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/" th:text="#{notedown.templates.common.template.header.home}"></a>
+                </li>
+            </ul>
         </div>
-    </body>
+    </div>
+</div>
+<div class="container">
+    <div class="jumbotron error">
+        <h1 th:text="#{notedown.templates.error.error}"></h1>
+
+        <p class="lead" th:text="#{notedown.templates.error.msg}"></p>
+    </div>
+    <div th:replace="common/template :: footer(displayText=true)"></div>
+</div>
+</body>
 </html>
