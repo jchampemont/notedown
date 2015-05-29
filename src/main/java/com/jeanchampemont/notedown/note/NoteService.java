@@ -163,7 +163,7 @@ public class NoteService {
     }
 
     @Transactional
-    @Scheduled(fixedDelay = 2 * 1000 * 60 * 60, initialDelay = 2 * 1000 * 60 * 60)
+    @Scheduled(cron = "${notedown.history-compress-cron}")
     public void compressHistory() {
         log.info("Starting note compression...");
         StopWatch stopWatch = new StopWatch("compressHistory");
