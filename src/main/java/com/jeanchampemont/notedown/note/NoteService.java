@@ -106,33 +106,37 @@ public class NoteService {
         User user = authenticationService.getCurrentUser();
         Note originalNote = repo.findOne(note.getId());
         String originalContent;
+        boolean isNew = false;
         if (originalNote == null) {
             originalNote = note;
             originalContent = "";
+            isNew = true;
         } else {
             originalContent = originalNote.getContent();
         }
         if (hasWriteAccess(user, originalNote)) {
-            originalNote = updateLastModification(originalNote);
-            originalNote.setTitle(note.getTitle());
-            originalNote.setContent(note.getContent());
-            originalNote.setUser(user);
-            originalNote = repo.save(originalNote);
+            //Perform save only if the note has changed
+            if (isNew || ! note.getContent().equals(originalNote.getContent()) || ! note.getTitle().equals(originalNote.getTitle())) {
+                originalNote = updateLastModification(originalNote);
+                originalNote.setTitle(note.getTitle());
+                originalNote.setContent(note.getContent());
+                originalNote.setUser(user);
+                originalNote = repo.save(originalNote);
 
-            NoteEvent event = NoteEventHelper.builder()
-                    .noteId(originalNote.getId())
-                    .version(version + 1)
-                    .user(user)
-                    .title(note.getTitle())
-                    .diff(originalContent, note.getContent())
-                    .save()
-                    .build();
+                NoteEvent event = NoteEventHelper.builder()
+                        .noteId(originalNote.getId())
+                        .version(version + 1)
+                        .user(user)
+                        .title(note.getTitle())
+                        .diff(originalContent, note.getContent())
+                        .save()
+                        .build();
 
-            event.setNote(originalNote);
-            event = eventRepo.save(event);
+                event.setNote(originalNote);
+                event = eventRepo.save(event);
 
-            originalNote.getEvents().add(event);
-
+                originalNote.getEvents().add(event);
+            }
             return originalNote;
         } else {
             throw new OperationNotAllowedException();
