@@ -17,10 +17,14 @@
  */
 package com.jeanchampemont.notedown.note;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
+import com.jeanchampemont.notedown.note.persistence.Note;
+import com.jeanchampemont.notedown.note.persistence.NoteEvent;
+import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
+import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
+import com.jeanchampemont.notedown.security.AuthenticationService;
+import com.jeanchampemont.notedown.user.persistence.User;
+import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
+import difflib.PatchFailedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,33 +37,27 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
-import com.jeanchampemont.notedown.note.persistence.Note;
-import com.jeanchampemont.notedown.note.persistence.NoteEvent;
-import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
-import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
-import com.jeanchampemont.notedown.security.AuthenticationService;
-import com.jeanchampemont.notedown.user.persistence.User;
-import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
-
-import difflib.PatchFailedException;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NoteService {
-	
-	private Log log = LogFactory.getLog(NoteService.class);
+
+    private Log log = LogFactory.getLog(NoteService.class);
 
     private NoteRepository repo;
 
     private NoteEventRepository eventRepo;
 
     private AuthenticationService authenticationService;
-    
+
     private int maxHistorySize;
 
     @Autowired
     public NoteService(NoteRepository repo, NoteEventRepository eventRepo
-    		, AuthenticationService authenticationService
-    		, @Value("${notedown.max-history-size}") int maxHistorySize) {
+            , AuthenticationService authenticationService
+            , @Value("${notedown.max-history-size}") int maxHistorySize) {
         this.repo = repo;
         this.eventRepo = eventRepo;
         this.authenticationService = authenticationService;
@@ -77,6 +75,7 @@ public class NoteService {
 
     /**
      * Get a not by ID.
+     *
      * @param id
      * @return
      */
@@ -97,6 +96,7 @@ public class NoteService {
 
     /**
      * Create or update a note
+     *
      * @param note
      * @return
      */
@@ -141,6 +141,7 @@ public class NoteService {
 
     /**
      * Delete a note by id
+     *
      * @param id
      */
     @Transactional
@@ -156,54 +157,54 @@ public class NoteService {
             }
         }
     }
-    
+
     @Transactional
-    @Scheduled(fixedDelay = 2*1000*60*60, initialDelay = 2*1000*60*60)
+    @Scheduled(fixedDelay = 2 * 1000 * 60 * 60, initialDelay = 2 * 1000 * 60 * 60)
     public void compressHistory() {
-    	log.info("Starting note compression...");
-    	StopWatch stopWatch = new StopWatch("compressHistory");
-    	stopWatch.start();
-    	Iterable<Note> notes = repo.findAll();
-    	for(Note note : notes) {
-    		if(note.getEvents().size() > maxHistorySize) {
-    			log.debug("compressing note " + note.getId());
-    			List<NoteEvent> keptEvents = note.getEvents().subList(0, maxHistorySize - 1);
+        log.info("Starting note compression...");
+        StopWatch stopWatch = new StopWatch("compressHistory");
+        stopWatch.start();
+        Iterable<Note> notes = repo.findAll();
+        for (Note note : notes) {
+            if (note.getEvents().size() > maxHistorySize) {
+                log.debug("compressing note " + note.getId());
+                List<NoteEvent> keptEvents = note.getEvents().subList(0, maxHistorySize - 1);
 
                 Note copy = new Note();
                 copy.setContent(note.getContent());
                 copy.setId(note.getId());
                 copy.setTitle(note.getTitle());
 
-    			try {
-					copy = NoteEventHelper.unPatch(keptEvents, copy);
-				} catch (PatchFailedException e) {
-					log.error("Unpatching NoteEvent should not fail here...");
-				}
-    			String content = copy.getContent();
+                try {
+                    copy = NoteEventHelper.unPatch(keptEvents, copy);
+                } catch (PatchFailedException e) {
+                    log.error("Unpatching NoteEvent should not fail here...");
+                }
+                String content = copy.getContent();
 
-    			List<NoteEvent> oldEvents = note.getEvents().subList(maxHistorySize - 1, note.getEvents().size());
-    			try {
-					copy = NoteEventHelper.unPatch(oldEvents, copy);
-				} catch (PatchFailedException e) {
-					log.error("Unpatching NoteEvent should not fail here...");
-				}
-    			NoteEvent compressedEvent = NoteEventHelper.builder()
-						    					.noteId(note.getId())
-						                		.version(oldEvents.get(0).getId().getVersion())
-						                		.user(note.getUser())
-						                		.title(oldEvents.get(0).getTitle())
-						                		.diff(copy.getContent(), content)
-						                		.compress()
-						                		.build();
-    			eventRepo.delete(oldEvents);
-    			
-    			keptEvents.add(compressedEvent);
-    			eventRepo.save(compressedEvent);
-    		}
-    	}
-    	stopWatch.stop();
-    	log.info("Finished note compression");
-    	log.info(stopWatch.shortSummary());
+                List<NoteEvent> oldEvents = note.getEvents().subList(maxHistorySize - 1, note.getEvents().size());
+                try {
+                    copy = NoteEventHelper.unPatch(oldEvents, copy);
+                } catch (PatchFailedException e) {
+                    log.error("Unpatching NoteEvent should not fail here...");
+                }
+                NoteEvent compressedEvent = NoteEventHelper.builder()
+                        .noteId(note.getId())
+                        .version(oldEvents.get(0).getId().getVersion())
+                        .user(note.getUser())
+                        .title(oldEvents.get(0).getTitle())
+                        .diff(copy.getContent(), content)
+                        .compress()
+                        .build();
+                eventRepo.delete(oldEvents);
+
+                keptEvents.add(compressedEvent);
+                eventRepo.save(compressedEvent);
+            }
+        }
+        stopWatch.stop();
+        log.info("Finished note compression");
+        log.info(stopWatch.shortSummary());
     }
 
     private Note updateLastModification(Note note) {

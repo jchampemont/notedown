@@ -17,106 +17,105 @@
  */
 package com.jeanchampemont.notedown.note;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.NoteEvent;
 import com.jeanchampemont.notedown.note.persistence.NoteEventId;
 import com.jeanchampemont.notedown.note.persistence.NoteEventType;
 import com.jeanchampemont.notedown.user.persistence.User;
-
 import difflib.DiffUtils;
 import difflib.Patch;
 import difflib.PatchFailedException;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 public class NoteEventHelper {
-	public static NoteEventBuilder builder() {
-		return new NoteEventBuilder();
-	}
-	
-	public static Note unPatch(List<NoteEvent> events, Note note) throws PatchFailedException {
-		List<String> noteContent = Arrays.asList(note.getContent().split("\n"));
-		for(NoteEvent event : events) {
-			Patch<String> patch = DiffUtils.parseUnifiedDiff(Arrays.asList(event.getContentDiff().split("\n")));
-			noteContent = patch.restore(noteContent);
-		}
-		NoteEvent lastEvent = events.get(events.size() - 1);
-		note.setLastModification(lastEvent.getDate());
-		note.setTitle(lastEvent.getTitle());
-		note.setContent(String.join("\n", noteContent));
-		return note;
-	}
-	
-	public static class NoteEventBuilder {
-		private UUID noteId;
-		private long version;
-		private User user;
-		private NoteEventType type;
-		private String title;
-		private String original;
-		private String revised;
-		
-		public NoteEventBuilder noteId(UUID noteId) {
-			this.noteId = noteId;
-			return this;
-		}
-		
-		public NoteEventBuilder version(long version) {
-			this.version = version;
-			return this;
-		}
-		
-		public NoteEventBuilder user(User user) {
-			this.user = user;
-			return this;
-		}
-		
-		public NoteEventBuilder save() {
-			type = NoteEventType.SAVE;
-			return this;
-		}
-		
-		public NoteEventBuilder compress() {
-			type = NoteEventType.HISTORY_COMPRESS;
-			return this;
-		}
-		
-		public NoteEventBuilder title(String title) {
-			this.title = title;
-			return this;
-		}
-		
-		public NoteEventBuilder diff(String original, String revised) {
-			this.original = original;
-			this.revised = revised;
-			return this;
-		}
-		
-		public NoteEvent build() {
-			NoteEvent result = new NoteEvent();
-			result.setId(new NoteEventId(noteId, version));
-			result.setUser(user);
-			result.setDate(new Date());
-			result.setType(type);
-			result.setTitle(title);
-			result.setContentDiff(generateDiff(original, revised));
+    public static NoteEventBuilder builder() {
+        return new NoteEventBuilder();
+    }
 
-			return result;
-		}
-		
-		private String generateDiff(String original, String revised) {
-	        List<String> originalLinesList = Arrays.asList(original.split("\n"));
-	        List<String> revisedLinesList = Arrays.asList(revised.split("\n"));
+    public static Note unPatch(List<NoteEvent> events, Note note) throws PatchFailedException {
+        List<String> noteContent = Arrays.asList(note.getContent().split("\n"));
+        for (NoteEvent event : events) {
+            Patch<String> patch = DiffUtils.parseUnifiedDiff(Arrays.asList(event.getContentDiff().split("\n")));
+            noteContent = patch.restore(noteContent);
+        }
+        NoteEvent lastEvent = events.get(events.size() - 1);
+        note.setLastModification(lastEvent.getDate());
+        note.setTitle(lastEvent.getTitle());
+        note.setContent(String.join("\n", noteContent));
+        return note;
+    }
 
-	        Patch<String> patch = DiffUtils.diff(originalLinesList, revisedLinesList);
+    public static class NoteEventBuilder {
+        private UUID noteId;
+        private long version;
+        private User user;
+        private NoteEventType type;
+        private String title;
+        private String original;
+        private String revised;
 
-	        List<String> diff = DiffUtils
-	                .generateUnifiedDiff("original", "revised", originalLinesList, patch, 0);
+        public NoteEventBuilder noteId(UUID noteId) {
+            this.noteId = noteId;
+            return this;
+        }
 
-	        return String.join("\n", diff);
-	    }
-	}
+        public NoteEventBuilder version(long version) {
+            this.version = version;
+            return this;
+        }
+
+        public NoteEventBuilder user(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public NoteEventBuilder save() {
+            type = NoteEventType.SAVE;
+            return this;
+        }
+
+        public NoteEventBuilder compress() {
+            type = NoteEventType.HISTORY_COMPRESS;
+            return this;
+        }
+
+        public NoteEventBuilder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public NoteEventBuilder diff(String original, String revised) {
+            this.original = original;
+            this.revised = revised;
+            return this;
+        }
+
+        public NoteEvent build() {
+            NoteEvent result = new NoteEvent();
+            result.setId(new NoteEventId(noteId, version));
+            result.setUser(user);
+            result.setDate(new Date());
+            result.setType(type);
+            result.setTitle(title);
+            result.setContentDiff(generateDiff(original, revised));
+
+            return result;
+        }
+
+        private String generateDiff(String original, String revised) {
+            List<String> originalLinesList = Arrays.asList(original.split("\n"));
+            List<String> revisedLinesList = Arrays.asList(revised.split("\n"));
+
+            Patch<String> patch = DiffUtils.diff(originalLinesList, revisedLinesList);
+
+            List<String> diff = DiffUtils
+                    .generateUnifiedDiff("original", "revised", originalLinesList, patch, 0);
+
+            return String.join("\n", diff);
+        }
+    }
 }
