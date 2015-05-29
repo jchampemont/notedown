@@ -21,6 +21,7 @@ import com.jeanchampemont.notedown.note.NoteService;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.web.api.NoteDto;
+import com.jeanchampemont.notedown.web.utils.ConflictException;
 import com.jeanchampemont.notedown.web.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +57,9 @@ public class NoteRestController {
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public NoteDto save(NoteDto note) {
+        if(noteService.isVersionOutdated(UUID.fromString(note.getId()), note.getVersion())) {
+            throw new ConflictException();
+        }
         Note n = new Note(note.getTitle(), note.getContent(), authenticationService.getCurrentUser());
         n.setId(UUID.fromString(note.getId()));
         n = noteService.createUpdate(n, note.getVersion());

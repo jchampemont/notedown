@@ -113,6 +113,15 @@ public class Note {
     }
 
     @Transient
+    public Long getFirstAvailableVersion() {
+        if (events == null || events.size() == 0) {
+            return 0L;
+        } else {
+            return events.get(events.size()-1).getId().getVersion();
+        }
+    }
+
+    @Transient
     public Long getLastVersion() {
         if (events == null || events.size() == 0) {
             return 0L;

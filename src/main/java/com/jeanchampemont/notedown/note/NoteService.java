@@ -144,6 +144,20 @@ public class NoteService {
     }
 
     /**
+     * Check if version available on client side is too old to
+     * get saved
+     *
+     * @param noteId
+     * @param version
+     * @return
+     */
+    public boolean isVersionOutdated(UUID noteId, Long version) {
+        Note originalNote = repo.findOne(noteId);
+
+        return originalNote != null && version < originalNote.getFirstAvailableVersion();
+    }
+
+    /**
      * Delete a note by id
      *
      * @param id

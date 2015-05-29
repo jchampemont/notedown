@@ -85,14 +85,18 @@ $(function () {
                     $("#timeago").timeago();
                     $("#saved-label").removeClass("hide");
                     $("#saving-label").addClass("hide");
-                    $("#error-saving-label").addClass("hide");
+                    $(".error-label").addClass("hide");
                     shouldAutoSave = true;
                 },
-                error: function () {
+                error: function (err) {
                     $("#saving-label").addClass("hide");
-                    $("#error-saving-label").removeClass("hide");
                     shouldAutoSave = false;
                     saveInProgress = false;
+                    if(err.status == 409) {
+                        $("#error-version-label").removeClass("hide");
+                    } else {
+                        $("#error-saving-label").removeClass("hide");
+                    }
                 }
             });
         }
