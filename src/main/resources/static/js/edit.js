@@ -77,6 +77,7 @@ $(function () {
                 headers: headers,
                 success: function (data) {
                     $("#id").val(data.id);
+                    history.replaceState(null, null, data.id);
                     $("#version").val(data.version);
                     saveInProgress = false;
                     $("#saved-label #timeago").remove();
