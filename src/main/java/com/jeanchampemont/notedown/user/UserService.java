@@ -52,7 +52,6 @@ public class UserService {
     }
 
     /**
-     *
      * @return whether or not the application has at least one registered user.
      */
     @Transactional(readOnly = true)
@@ -63,6 +62,7 @@ public class UserService {
     /**
      * Create the user.
      * The password is encoded.
+     *
      * @param user
      * @return persisted user with encoded password
      */
@@ -77,6 +77,7 @@ public class UserService {
 
     /**
      * Find a user for this email if it exists
+     *
      * @param email
      * @return
      */
@@ -90,6 +91,7 @@ public class UserService {
      * Update user
      * This method does not update email or password.
      * Use changeEmail or changePassword instead.
+     *
      * @param user
      * @return updated user
      */
@@ -108,6 +110,7 @@ public class UserService {
 
     /**
      * Change user's email
+     *
      * @param user
      * @param email
      * @param password
@@ -129,6 +132,7 @@ public class UserService {
 
     /**
      * Change user's password
+     *
      * @param user
      * @param oldPassword
      * @param newPassword

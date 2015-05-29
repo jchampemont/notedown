@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- $(function() {
+$(function () {
     //Setting marked.js options
     marked.setOptions({
-        highlight: function(code) {
+        highlight: function (code) {
             return hljs.highlightAuto(code).value;
         }
     });
@@ -26,4 +26,4 @@
     //taboverride.js options
     tabOverride.tabSize(4);
 
- });
+});

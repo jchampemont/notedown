@@ -51,7 +51,7 @@ public class NoteEvent {
 
     @Column(name = "content_diff", nullable = false)
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String contentDiff;
 
     public NoteEventId getId() {

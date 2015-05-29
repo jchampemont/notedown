@@ -82,18 +82,22 @@ body {
 .editor-container-title {
     margin-top: -15px;
 }
+
 .editor-container {
     margin-top: 5px;
     height: 100%;
 }
+
 .editor-container textarea {
     resize: none;
     background-color: #042029;
     color: #819090;
 }
+
 .editor-preview {
     overflow: scroll;
 }
+
 .editor-toolbar {
     position: fixed;
     bottom: 0px;
@@ -103,9 +107,11 @@ body {
     border: 1px solid #d5d5d5;
     filter: none;
 }
+
 .editor-toolbar .btn {
     margin-top: 5px;
 }
+
 .editor-toolbar label {
     margin-top: 10px;
 }

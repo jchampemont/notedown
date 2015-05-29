@@ -45,7 +45,7 @@ public class IndexController {
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String login(WebRequest req, ModelMap model) {
-        if(userService.hasRegisteredUser()) {
+        if (userService.hasRegisteredUser()) {
             if (req.getParameter("error") != null) {
                 model.put("error", true);
             } else if (req.getParameter("logout") != null) {
@@ -63,16 +63,16 @@ public class IndexController {
     @RequestMapping(value = "welcome", method = RequestMethod.POST)
     public String install(InstallForm form, ModelMap model) {
         //Only the first account should be created from here.
-        if(! userService.hasRegisteredUser()) {
+        if (!userService.hasRegisteredUser()) {
             model.put("form", form);
             //Basic email validation...
-            if(!form.getEmail().contains("@")) {
+            if (!form.getEmail().contains("@")) {
                 model.put("wrongEmail", true);
                 return "welcome";
-            } else if(form.getPassword().length() < 6) {
+            } else if (form.getPassword().length() < 6) {
                 model.put("wrongPassword", true);
                 return "welcome";
-            } else if(!form.getPassword().equals(form.getPasswordConfirmation())) {
+            } else if (!form.getPassword().equals(form.getPasswordConfirmation())) {
                 model.put("wrongConfirmation", true);
                 return "welcome";
             }

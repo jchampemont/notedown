@@ -38,7 +38,7 @@ public class Note {
 
     @Column(name = "content", nullable = false)
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String content;
 
     @Column(name = "last_modification", nullable = false)
@@ -114,7 +114,7 @@ public class Note {
 
     @Transient
     public Long getLastVersion() {
-        if(events == null || events.size() == 0) {
+        if (events == null || events.size() == 0) {
             return 0L;
         } else {
             return events.get(0).getId().getVersion();

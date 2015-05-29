@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(function() {
+$(function () {
 
-    var handleResize = function() {
+    var handleResize = function () {
         var windowHeight = window.innerHeight;
         var textareaHeight = windowHeight - 145;
         $('#editor').css('height', textareaHeight);
@@ -25,20 +25,20 @@ $(function() {
         render();
     };
 
-    var render = function() {
-        if($('#toggle-preview-pane').is(":checked") && $('#toggle-preview-pane').is(":visible")) {
+    var render = function () {
+        if ($('#toggle-preview-pane').is(":checked") && $('#toggle-preview-pane').is(":visible")) {
             $('#preview').html(marked($('#editor').val()));
         }
     };
 
-    var scroll = function() {
-        if($('#toggle-preview-pane').is(":checked") && $('#toggle-preview-pane').is(":visible")) {
+    var scroll = function () {
+        if ($('#toggle-preview-pane').is(":checked") && $('#toggle-preview-pane').is(":visible")) {
             $("#preview").scrollTop($("#editor").scrollTop());
         }
     };
 
-    var scrollToEndWhenEditAtEnd = function() {
-        if($('#toggle-preview-pane').is(":checked")) {
+    var scrollToEndWhenEditAtEnd = function () {
+        if ($('#toggle-preview-pane').is(":checked")) {
             var length = $('#editor').val().length;
             var caret = $('#editor').caret();
             if (caret == length) {
@@ -47,18 +47,18 @@ $(function() {
         }
     };
 
-    var togglePreviewPane = function() {
+    var togglePreviewPane = function () {
         $('#preview').parent().toggleClass('hide');
         $('#editor').parent().toggleClass('col-sm-6 col-sm-12');
-        if($('#toggle-preview-pane').is(":checked")) {
+        if ($('#toggle-preview-pane').is(":checked")) {
             render();
             scroll();
         }
     };
 
     var saveInProgress = false;
-    var save = function() {
-        if(!saveInProgress && ($("#title").val().length > 0 || $("#editor").val().length > 0)) {
+    var save = function () {
+        if (!saveInProgress && ($("#title").val().length > 0 || $("#editor").val().length > 0)) {
             saveInProgress = true;
             $("#saved-label").addClass("hide");
             $("#saving-label").removeClass("hide");
@@ -75,7 +75,7 @@ $(function() {
                 url: "/api/note/",
                 data: note,
                 headers: headers,
-                success: function(data) {
+                success: function (data) {
                     $("#id").val(data.id);
                     $("#version").val(data.version);
                     saveInProgress = false;
@@ -87,7 +87,7 @@ $(function() {
                     $("#error-saving-label").addClass("hide");
                     shouldAutoSave = true;
                 },
-                error: function() {
+                error: function () {
                     $("#saving-label").addClass("hide");
                     $("#error-saving-label").removeClass("hide");
                     shouldAutoSave = false;
@@ -100,11 +100,11 @@ $(function() {
     var lastAutoSave = undefined;
     var saveNeeded = false;
     var shouldAutoSave = true;
-    var autoSave = function() {
+    var autoSave = function () {
         saveNeeded = true;
-        if(shouldAutoSave) {
+        if (shouldAutoSave) {
             clearTimeout(lastAutoSave);
-            lastAutoSave = setTimeout(function() {
+            lastAutoSave = setTimeout(function () {
                 save();
                 saveNeeded = false;
             }, 2000);
@@ -113,7 +113,7 @@ $(function() {
 
     $(window).resize(handleResize);
 
-    $('#editor').keyup(function() {
+    $('#editor').keyup(function () {
         autoSave();
         render();
         scrollToEndWhenEditAtEnd();
@@ -123,25 +123,25 @@ $(function() {
 
     $("#toggle-preview-pane").change(togglePreviewPane);
 
-    if($("#timeago").prop("title").length > 0) {
+    if ($("#timeago").prop("title").length > 0) {
         $("#timeago").timeago();
         $("#saved-label").removeClass("hide");
     }
 
-    $(window).bind("beforeunload", function() {
+    $(window).bind("beforeunload", function () {
         if (saveNeeded) {
             return notedown.javascript.exitWarning;
         }
     });
 
-    $(document).keydown(function(event) {
+    $(document).keydown(function (event) {
             // If Control or Command key is pressed and the S key is pressed
             // run save function. 83 is the key code for S.
-            if((event.ctrlKey || event.metaKey) && event.which == 83) {
+            if ((event.ctrlKey || event.metaKey) && event.which == 83) {
                 save();
                 event.preventDefault();
                 return false;
-            };
+            }
         }
     );
 

@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(function() {
+$(function () {
 
-    var toggleShowPreviewIcon = function() {
+    var toggleShowPreviewIcon = function () {
         $(this).find('.preview-icon').toggleClass('invisible');
     };
 
-    var renderPreviewModal = function(note) {
-        if(note.title.length > 0) {
+    var renderPreviewModal = function (note) {
+        if (note.title.length > 0) {
             $('#preview-modal .modal-title').html(note.title);
         } else {
             $('#preview-modal .modal-title').html(notedown.javascript.emptyTitle);
@@ -33,11 +33,11 @@ $(function() {
 
     $('#note-list tr').hover(toggleShowPreviewIcon);
 
-    $('.preview-icon').click(function() {
+    $('.preview-icon').click(function () {
         var id = $(this).data('id');
         $.ajax({
             type: 'GET',
-            url: '/api/note/'+ id,
+            url: '/api/note/' + id,
             success: renderPreviewModal
         });
     });

@@ -28,7 +28,8 @@ import java.util.UUID;
 @Embeddable
 public class NoteEventId implements Serializable {
 
-    public NoteEventId() {}
+    public NoteEventId() {
+    }
 
     public NoteEventId(UUID noteId, Long version) {
         this.noteId = noteId;

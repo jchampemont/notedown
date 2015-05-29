@@ -6,16 +6,16 @@
     <changeSet author="jchampemont" id="1">
         <createTable tableName="persistent_logins">
             <column name="username" type="VARCHAR(64)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="series" type="VARCHAR(64)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="token" type="VARCHAR(64)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="last_used" type="TIMESTAMP">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
@@ -67,11 +67,14 @@
     </changeSet>
 
     <changeSet author="jchampemont" id="7">
-        <addUniqueConstraint columnNames="email" constraintName="UC_USER_ACCOUNT_EMAIL_COL" deferrable="false" disabled="false" initiallyDeferred="false" tableName="user_account"/>
+        <addUniqueConstraint columnNames="email" constraintName="UC_USER_ACCOUNT_EMAIL_COL" deferrable="false"
+                             disabled="false" initiallyDeferred="false" tableName="user_account"/>
     </changeSet>
 
     <changeSet author="jchampemont" id="8">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note" constraintName="FK_NOTE_USER_ACCOUNT" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_account"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note" constraintName="FK_NOTE_USER_ACCOUNT"
+                                 deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="user_account"/>
     </changeSet>
 
     <changeSet author="jchampemont" id="9">
@@ -112,11 +115,15 @@
     </changeSet>
 
     <changeSet author="jchampemont" id="12">
-        <addForeignKeyConstraint baseColumnNames="note_id" baseTableName="note_event" constraintName="FK_NOTE_EVENT_NOTE" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="note"/>
+        <addForeignKeyConstraint baseColumnNames="note_id" baseTableName="note_event"
+                                 constraintName="FK_NOTE_EVENT_NOTE" deferrable="false" initiallyDeferred="false"
+                                 referencedColumnNames="id" referencedTableName="note"/>
     </changeSet>
 
     <changeSet author="jchampemont" id="13">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note_event" constraintName="FK_NOTE_EVENT_USER" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_account"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="note_event"
+                                 constraintName="FK_NOTE_EVENT_USER" deferrable="false" initiallyDeferred="false"
+                                 referencedColumnNames="id" referencedTableName="user_account"/>
     </changeSet>
 
 </databaseChangeLog>
