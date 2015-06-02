@@ -25,6 +25,7 @@ import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
+import com.jeanchampemont.notedown.web.api.NoteDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,7 +67,7 @@ public class NoteServiceTest {
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findByUserOrderByLastModificationDesc(user)).thenReturn(Collections.emptyList());
 
-        Iterable<Note> result = sut.getNotes();
+        Iterable<NoteDto> result = sut.getNotes();
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findByUserOrderByLastModificationDesc(user);
@@ -82,16 +84,19 @@ public class NoteServiceTest {
 
         Note note = new Note();
         note.setUser(user);
+        note.setTitle("My Title");
+        note.setContent("My Content");
 
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findOne(id)).thenReturn(note);
 
-        Note result = sut.get(id);
+        NoteDto result = sut.get(id);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(id);
 
-        assertEquals(note, result);
+        assertEquals(note.getTitle(), result.getTitle());
+        assertEquals(note.getContent(), result.getContent());
     }
 
     @Test(expected = OperationNotAllowedException.class)
@@ -111,9 +116,6 @@ public class NoteServiceTest {
         when(repoMock.findOne(id)).thenReturn(note);
 
         sut.get(id);
-
-        verify(authenticationServiceMock).getCurrentUser();
-        verify(repoMock).findOne(id);
     }
 
     @Test
@@ -122,24 +124,25 @@ public class NoteServiceTest {
         user.setId(12);
 
         Note note = new Note();
-        note.setContent("");
+        note.setContent("crazy new conTent");
+        note.setTitle("new title");
 
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findOne(note.getId())).thenReturn(null);
-        when(repoMock.save(note)).thenReturn(note);
+        when(repoMock.save(any(Note.class))).thenAnswer(returnsFirstArg());
+        when(eventRepoMock.save(any(NoteEvent.class))).thenAnswer(returnsFirstArg());
 
-        Note result = sut.createUpdate(note, 0L);
+        NoteDto result = sut.createUpdate(mapNoteToNoteDto(note), 0L);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());
-        verify(repoMock).save(note);
         ArgumentCaptor<NoteEvent> argument = ArgumentCaptor.forClass(NoteEvent.class);
         verify(eventRepoMock).save(argument.capture());
 
         assertEquals(new Long(1L), argument.getValue().getId().getVersion());
         assertEquals(user, argument.getValue().getUser());
-        assertEquals(note, argument.getValue().getNote());
-        assertEquals(result, note);
+        assertEquals(note.getTitle(), result.getTitle());
+        assertEquals(note.getContent(), result.getContent());
     }
 
     @Test
@@ -158,8 +161,9 @@ public class NoteServiceTest {
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findOne(note.getId())).thenReturn(existingNote);
         when(repoMock.save(existingNote)).thenReturn(existingNote);
+        when(eventRepoMock.save(any(NoteEvent.class))).thenAnswer(returnsFirstArg());
 
-        Note result = sut.createUpdate(note, 41L);
+        NoteDto result = sut.createUpdate(mapNoteToNoteDto(note), 41L);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());
@@ -170,7 +174,8 @@ public class NoteServiceTest {
         assertEquals(new Long(42L), argument.getValue().getId().getVersion());
         assertEquals(user, argument.getValue().getUser());
         assertEquals(existingNote, argument.getValue().getNote());
-        assertEquals(result, existingNote);
+        assertEquals(result.getTitle(), existingNote.getTitle());
+        assertEquals(result.getContent(), existingNote.getContent());
         assertEquals("--- original\n+++ revised\n@@ -1,1 +1,1 @@\n-old content\n+content", argument.getValue().getContentDiff());
     }
 
@@ -193,7 +198,7 @@ public class NoteServiceTest {
         when(authenticationServiceMock.getCurrentUser()).thenReturn(notAllowedUser);
         when(repoMock.findOne(note.getId())).thenReturn(existingNote);
 
-        sut.createUpdate(note, 0L);
+        sut.createUpdate(mapNoteToNoteDto(note), 0L);
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());
@@ -214,5 +219,14 @@ public class NoteServiceTest {
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());
         verify(repoMock).delete(note.getId());
+    }
+
+    private NoteDto mapNoteToNoteDto(Note n) {
+        NoteDto result = new NoteDto();
+        result.setId(n.getId().toString());
+        result.setTitle(n.getTitle());
+        result.setContent(n.getContent());
+        result.setVersion(n.getLastVersion());
+        return result;
     }
 }

@@ -17,11 +17,16 @@
  */
 package com.jeanchampemont.notedown.web.api;
 
+import java.util.Date;
+import java.util.UUID;
+
 public class NoteDto {
     private String id;
     private String title;
     private String content;
     private Long version;
+    private Date lastModification;
+    private Long lastVersion;
 
     public String getId() {
         return id;
@@ -53,5 +58,25 @@ public class NoteDto {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public Date getLastModification() {
+        return lastModification;
+    }
+
+    public void setLastModification(Date lastModification) {
+        this.lastModification = lastModification;
+    }
+
+    public Long getLastVersion() {
+        return lastVersion;
+    }
+
+    public void setLastVersion(Long lastVersion) {
+        this.lastVersion = lastVersion;
+    }
+
+    public UUID getIdAsUUID() {
+        return UUID.fromString(id);
     }
 }

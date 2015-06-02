@@ -24,6 +24,7 @@ import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
+import com.jeanchampemont.notedown.web.api.NoteDto;
 import difflib.PatchFailedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +41,7 @@ import org.springframework.util.StopWatch;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -68,9 +70,9 @@ public class NoteService {
      * @return all notes for the current user
      */
     @Transactional(readOnly = true)
-    public Iterable<Note> getNotes() {
+    public Iterable<NoteDto> getNotes() {
         User user = authenticationService.getCurrentUser();
-        return repo.findByUserOrderByLastModificationDesc(user);
+        return repo.findByUserOrderByLastModificationDesc(user).stream().map(note -> mapNoteToNoteDto(note)).collect(Collectors.toList());
     }
 
     /**
@@ -81,14 +83,14 @@ public class NoteService {
      */
     @Transactional(readOnly = true)
     @Cacheable("note")
-    public Note get(UUID id) {
+    public NoteDto get(UUID id) {
         User user = authenticationService.getCurrentUser();
         Note note = repo.findOne(id);
         if (note == null) {
             return null;
         }
         if (hasReadAccess(user, note)) {
-            return note;
+            return mapNoteToNoteDto(note);
         } else {
             throw new OperationNotAllowedException();
         }
@@ -102,42 +104,38 @@ public class NoteService {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = "note", key = "#note.id")
-    public Note createUpdate(Note note, Long version) {
+    public NoteDto createUpdate(NoteDto note, Long version) {
         User user = authenticationService.getCurrentUser();
-        Note originalNote = repo.findOne(note.getId());
-        String originalContent;
-        boolean isNew = false;
-        if (originalNote == null) {
-            originalNote = note;
-            originalContent = "";
-            isNew = true;
-        } else {
-            originalContent = originalNote.getContent();
+        Note dbNote = repo.findOne(note.getIdAsUUID());
+        if (dbNote == null) {
+            dbNote = new Note();
+            dbNote.setTitle("");
+            dbNote.setContent("");
         }
-        if (hasWriteAccess(user, originalNote)) {
+        if (hasWriteAccess(user, dbNote)) {
             //Perform save only if the note has changed
-            if (isNew || ! note.getContent().equals(originalNote.getContent()) || ! note.getTitle().equals(originalNote.getTitle())) {
-                originalNote = updateLastModification(originalNote);
-                originalNote.setTitle(note.getTitle());
-                originalNote.setContent(note.getContent());
-                originalNote.setUser(user);
-                originalNote = repo.save(originalNote);
-
+            if (!note.getContent().equals(dbNote.getContent()) || !note.getTitle().equals(dbNote.getTitle())) {
                 NoteEvent event = NoteEventHelper.builder()
-                        .noteId(originalNote.getId())
+                        .noteId(dbNote.getId())
                         .version(version + 1)
                         .user(user)
                         .title(note.getTitle())
-                        .diff(originalContent, note.getContent())
+                        .diff(dbNote.getContent(), note.getContent())
                         .save()
                         .build();
 
-                event.setNote(originalNote);
+                dbNote = updateLastModification(dbNote);
+                dbNote.setTitle(note.getTitle());
+                dbNote.setContent(note.getContent());
+                dbNote.setUser(user);
+                dbNote = repo.save(dbNote);
+
+                event.setNote(dbNote);
                 event = eventRepo.save(event);
 
-                originalNote.getEvents().add(0, event);
+                dbNote.getEvents().add(0, event);
             }
-            return originalNote;
+            return mapNoteToNoteDto(dbNote);
         } else {
             throw new OperationNotAllowedException();
         }
@@ -236,5 +234,16 @@ public class NoteService {
 
     private boolean hasWriteAccess(User user, Note note) {
         return note.getUser() == null || note.getUser().getId() == user.getId();
+    }
+
+    private NoteDto mapNoteToNoteDto(Note n) {
+        NoteDto result = new NoteDto();
+        result.setId(n.getId().toString());
+        result.setTitle(n.getTitle());
+        result.setContent(n.getContent());
+        result.setVersion(n.getLastVersion());
+        result.setLastModification(n.getLastModification());
+        result.setLastVersion(n.getLastVersion());
+        return result;
     }
 }
