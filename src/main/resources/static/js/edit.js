@@ -92,7 +92,7 @@ $(function () {
                     $("#saving-label").addClass("hide");
                     shouldAutoSave = false;
                     saveInProgress = false;
-                    if(err.status == 409) {
+                    if (err.status == 409) {
                         $("#error-version-label").removeClass("hide");
                     } else {
                         $("#error-saving-label").removeClass("hide");
