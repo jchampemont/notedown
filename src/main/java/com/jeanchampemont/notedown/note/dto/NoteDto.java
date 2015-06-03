@@ -17,9 +17,6 @@
  */
 package com.jeanchampemont.notedown.note.dto;
 
-import com.jeanchampemont.notedown.user.dto.UserDto;
-import com.jeanchampemont.notedown.user.persistence.User;
-
 import java.util.Date;
 import java.util.UUID;
 
