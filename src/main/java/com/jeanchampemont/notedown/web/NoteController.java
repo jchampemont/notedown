@@ -62,7 +62,7 @@ public class NoteController {
     }
 
     @RequestMapping(value = "/note/delete/{id}", method = RequestMethod.GET)
-    public String delete(@PathVariable("id") UUID id, ModelMap model) {
+    public String delete(@PathVariable("id") String id, ModelMap model) {
         noteService.delete(id);
         return "redirect:/app";
     }

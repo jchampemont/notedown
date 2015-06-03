@@ -15,7 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jeanchampemont.notedown.web.api;
+package com.jeanchampemont.notedown.note.dto;
+
+import com.jeanchampemont.notedown.user.dto.UserDto;
+import com.jeanchampemont.notedown.user.persistence.User;
 
 import java.util.Date;
 import java.util.UUID;
@@ -75,7 +78,6 @@ public class NoteDto {
     public void setLastVersion(Long lastVersion) {
         this.lastVersion = lastVersion;
     }
-
     public UUID getIdAsUUID() {
         return UUID.fromString(id);
     }

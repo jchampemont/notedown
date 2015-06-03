@@ -25,7 +25,7 @@ import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
-import com.jeanchampemont.notedown.web.api.NoteDto;
+import com.jeanchampemont.notedown.note.dto.NoteDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -214,7 +214,7 @@ public class NoteServiceTest {
         when(authenticationServiceMock.getCurrentUser()).thenReturn(user);
         when(repoMock.findOne(note.getId())).thenReturn(note);
 
-        sut.delete(note.getId());
+        sut.delete(note.getId().toString());
 
         verify(authenticationServiceMock).getCurrentUser();
         verify(repoMock).findOne(note.getId());

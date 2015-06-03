@@ -117,7 +117,7 @@ public class Note {
         if (events == null || events.size() == 0) {
             return 0L;
         } else {
-            return events.get(events.size()-1).getId().getVersion();
+            return events.get(events.size() - 1).getId().getVersion();
         }
     }
 

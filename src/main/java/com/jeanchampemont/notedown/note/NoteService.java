@@ -17,6 +17,7 @@
  */
 package com.jeanchampemont.notedown.note;
 
+import com.jeanchampemont.notedown.note.dto.NoteDto;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.note.persistence.NoteEvent;
 import com.jeanchampemont.notedown.note.persistence.repository.NoteEventRepository;
@@ -24,14 +25,11 @@ import com.jeanchampemont.notedown.note.persistence.repository.NoteRepository;
 import com.jeanchampemont.notedown.security.AuthenticationService;
 import com.jeanchampemont.notedown.user.persistence.User;
 import com.jeanchampemont.notedown.utils.exception.OperationNotAllowedException;
-import com.jeanchampemont.notedown.web.api.NoteDto;
 import difflib.PatchFailedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -82,7 +80,6 @@ public class NoteService {
      * @return
      */
     @Transactional(readOnly = true)
-    @Cacheable("note")
     public NoteDto get(UUID id) {
         User user = authenticationService.getCurrentUser();
         Note note = repo.findOne(id);
@@ -103,7 +100,6 @@ public class NoteService {
      * @return
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    @CacheEvict(value = "note", key = "#note.id")
     public NoteDto createUpdate(NoteDto note, Long version) {
         User user = authenticationService.getCurrentUser();
         Note dbNote = repo.findOne(note.getIdAsUUID());
@@ -149,6 +145,7 @@ public class NoteService {
      * @param version
      * @return
      */
+    @Transactional(readOnly = true)
     public boolean isVersionOutdated(UUID noteId, Long version) {
         Note originalNote = repo.findOne(noteId);
 
@@ -161,13 +158,12 @@ public class NoteService {
      * @param id
      */
     @Transactional
-    @CacheEvict(value = "note")
-    public void delete(UUID id) {
+    public void delete(String id) {
         User user = authenticationService.getCurrentUser();
-        Note originalNote = repo.findOne(id);
+        Note originalNote = repo.findOne(UUID.fromString(id));
         if (originalNote != null) {
             if (hasWriteAccess(user, originalNote)) {
-                repo.delete(id);
+                repo.delete(UUID.fromString(id));
             } else {
                 throw new OperationNotAllowedException();
             }

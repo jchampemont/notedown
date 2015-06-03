@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jeanchampemont.notedown.web;
+package com.jeanchampemont.notedown.web.api;
 
 import com.jeanchampemont.notedown.note.NoteService;
 import com.jeanchampemont.notedown.note.persistence.Note;
 import com.jeanchampemont.notedown.security.AuthenticationService;
-import com.jeanchampemont.notedown.web.api.NoteDto;
+import com.jeanchampemont.notedown.note.dto.NoteDto;
 import com.jeanchampemont.notedown.web.utils.ConflictException;
 import com.jeanchampemont.notedown.web.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
